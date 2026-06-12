@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-ui bg-white text-brand-dark antialiased selection:bg-brand-red selection:text-white;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+  }
+}
+
+/* Custom editorial styles */
+
+/* Newspaper column divider lines */
+.newspaper-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .newspaper-divider-right {
+    border-right: 1px solid #e5e5e5;
+    padding-right: 1.5rem;
+  }
+  .newspaper-divider-left {
+    border-left: 1px solid #e5e5e5;
+    padding-left: 1.5rem;
+  }
+}
+
+/* Authentic news Dropcap */
+.drop-cap::first-letter {
+  float: left;
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  line-height: 3.8rem;
+  padding-top: 6px;
+  padding-right: 12px;
+  padding-left: 4px;
+  color: #9B1C1C; /* Brand Accent Crimson */
+  font-weight: 700;
+}
+
+/* Custom scrollbar to keep layout elegant */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f9f9f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c5c5c5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9B1C1C;
+}
+
+/* Moving ticker animation */
+@keyframes ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-ticker {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+}
+
+.animate-ticker:hover {
+  animation-play-state: paused;
+}
