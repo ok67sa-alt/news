@@ -21,7 +21,12 @@ backend
 
 **Build Command:**
 ```bash
-cd .. && npm install && npm run build
+npm install && npm run build:frontend && cd backend && npm install && npm run build
+```
+
+Or use the simpler version (will be handled by vercel.json):
+```bash
+npm run build
 ```
 
 **Output Directory:**
@@ -79,7 +84,7 @@ Visit [vercel.com/dashboard](https://vercel.com/dashboard)
 - Click "Continue"
 
 **Build Settings:**
-- Build Command: `cd .. && npm install && npm run build`
+- Build Command: `npm install && npm run build:frontend && cd backend && npm install && npm run build`
 - Output Directory: `.next`
 - Install Command: `npm install`
 

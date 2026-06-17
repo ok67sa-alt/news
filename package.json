@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:backend": "cd backend && npm run dev",
-    "build": "vite build && node copy-frontend.js && cd backend && npm run build",
+    "build": "vite build && node copy-frontend.js && cd backend && npm install && npm run build",
     "build:frontend": "vite build && node copy-frontend.js",
     "build:backend": "cd backend && npm run build",
     "preview": "vite preview",

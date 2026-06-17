@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "npm install && npm run build",
+  "buildCommand": "npm install && npm run build:frontend && cd backend && npm install && npm run build",
   "devCommand": "cd backend && npm run dev",
-  "installCommand": "npm install && cd backend && npm install",
+  "installCommand": "npm install",
   "framework": "nextjs",
   "outputDirectory": "backend/.next"
 }
