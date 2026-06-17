@@ -27,6 +27,9 @@ runCommand('npm install', __dirname);
 console.log('🗄️ Setting up Prisma...');
 runCommand('npx prisma generate', __dirname);
 
+console.log('🚀 Running database migrations...');
+runCommand('npx prisma migrate deploy', __dirname);
+
 console.log('🏗️ Building Next.js...');
 runCommand('npm run build', __dirname);
 
