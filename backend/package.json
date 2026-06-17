@@ -11,6 +11,9 @@
     "prisma:migrate": "prisma migrate dev --name init --preview-feature",
     "db:seed": "prisma db seed"
   },
+  "prisma": {
+    "seed": "node prisma/seed.cjs"
+  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1069.0",
     "@editorjs/code": "^2.9.4",
