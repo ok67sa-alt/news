@@ -1,17 +1,3 @@
-import gumImg from '../gum.jpg';
-import hilalImg from '../hilal.jpg';
-import pyraImg from '../pyra.jpg';
-import omdImg from '../omd.jpg';
-import oilImg from '../oil.jpg';
-import sustImg from '../sust.jpg';
-import wrstImg from '../wrst.jpg';
-import mrkImg from '../mrk.jpg';
-import sntImg from '../snt.jpeg';
-import sttImg from '../stt.jpg';
-import chsImg from '../chs.jpg';
-import bskImg from '../bsk.jpeg';
-import afuImg from '../afu.jpeg';
-
 /**
  * Check if a file path is a video
  */
@@ -55,6 +41,24 @@ export function getVideoThumbnail(videoUrl: string | null | undefined): string |
   }
 }
 
+// Map of legacy image filenames to their hashed names in backend/public/assets
+const imageMap: Record<string, string> = {
+  'gum.jpg': '/assets/gum-BsWUBtpT.jpg',
+  'hilal.jpg': '/assets/hilal-DZecT2m-.jpg',
+  'pyra.jpg': '/assets/pyra-BW848c_A.jpg',
+  'omd.jpg': '/assets/omd-DRhSuUge.jpg',
+  'oil.jpg': '/assets/oil-Dbu7mvRR.jpg',
+  'sust.jpg': '/assets/sust-BJJ6kvGw.jpg',
+  'sust.jpeg': '/assets/sust-BJJ6kvGw.jpg',
+  'wrst.jpg': '/assets/wrst-D1T3Nlju.jpg',
+  'mrk.jpg': '/assets/mrk-CqISkQd0.jpg',
+  'snt.jpeg': '/assets/snt-CzsdgBHm.jpeg',
+  'stt.jpg': '/assets/stt-CoTeKEHH.jpg',
+  'chs.jpg': '/assets/chs-DLtKLzfb.jpg',
+  'bsk.jpeg': '/assets/bsk-BlqnsMzq.jpeg',
+  'afu.jpeg': '/assets/afu-Bf4SIFvB.jpeg',
+};
+
 /**
  * Resolves an image path string to either a remote URL or a bundled local image asset.
  * If no image is provided but a video URL exists, tries to get video thumbnail.
@@ -62,9 +66,10 @@ export function getVideoThumbnail(videoUrl: string | null | undefined): string |
  * Works with full URLs or relative paths pointing to the files in src (e.g. "gum.jpg", "src/gum.jpg", "/src/gum.jpg").
  */
 export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?: string | null): string {
+  const API_URL = window.location.origin;
+
   // If no image but video file exists, return the video file path (will be handled by component)
   if (!imageVar && videoFile) {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     return videoFile.startsWith('http') ? videoFile : `${API_URL}${videoFile}`;
   }
 
@@ -76,7 +81,6 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
 
   if (!imageVar) {
     // Return placeholder for empty images
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     return `${API_URL}/placeholder.svg`;
   }
 
@@ -90,7 +94,6 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
   if (!imagePath) {
     // Try video file as fallback
     if (videoFile) {
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
       return videoFile.startsWith('http') ? videoFile : `${API_URL}${videoFile}`;
     }
     // Try video thumbnail as fallback
@@ -98,59 +101,30 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
       const thumbnail = getVideoThumbnail(videoUrl);
       if (thumbnail) return thumbnail;
     }
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     return `${API_URL}/placeholder.svg`;
   }
   
   if (imagePath.startsWith('http')) return imagePath;
 
   if (imagePath.startsWith('/uploads')) {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     return `${API_URL}${imagePath}`;
   }
 
   const filename = imagePath.split('/').pop() || '';
 
-  switch (filename) {
-    case 'gum.jpg':
-      return gumImg;
-    case 'hilal.jpg':
-      return hilalImg;
-    case 'pyra.jpg':
-      return pyraImg;
-    case 'omd.jpg':
-      return omdImg;
-    case 'oil.jpg':
-      return oilImg;
-    case 'sust.jpg':
-    case 'sust.jpeg':
-      return sustImg;
-    case 'wrst.jpg':
-      return wrstImg;
-    case 'mrk.jpg':
-      return mrkImg;
-    case 'snt.jpeg':
-      return sntImg;
-    case 'stt.jpg':
-      return sttImg;
-    case 'chs.jpg':
-      return chsImg;
-    case 'bsk.jpeg':
-      return bskImg;
-    case 'afu.jpeg':
-      return afuImg;
-    default:
-      // If unrecognized, try video file or video thumbnail or return placeholder
-      if (videoFile) {
-        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-        return videoFile.startsWith('http') ? videoFile : `${API_URL}${videoFile}`;
-      }
-      if (videoUrl) {
-        const thumbnail = getVideoThumbnail(videoUrl);
-        if (thumbnail) return thumbnail;
-      }
-      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-      return `${API_URL}/placeholder.svg`;
+  // Check if filename exists in our image map
+  if (imageMap[filename]) {
+    return imageMap[filename];
   }
+
+  // If unrecognized, try video file or video thumbnail or return placeholder
+  if (videoFile) {
+    return videoFile.startsWith('http') ? videoFile : `${API_URL}${videoFile}`;
+  }
+  if (videoUrl) {
+    const thumbnail = getVideoThumbnail(videoUrl);
+    if (thumbnail) return thumbnail;
+  }
+  return `${API_URL}/placeholder.svg`;
 }
 
