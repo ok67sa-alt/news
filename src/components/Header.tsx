@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Globe, Sun } from 'lucide-react';
 import BreakingTicker from './BreakingTicker';
+import { fetchAPI } from '../utils/api';
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,72 +20,89 @@ export default function Header() {
     setFormattedDate(new Date().toLocaleDateString('en-US', options));
   }, []);
 
-  const categories = [
-    { name: 'Politics', slug: 'politics' },
-    { name: 'Economy', slug: 'economy' },
-    { name: 'Humanitarian Affairs', slug: 'humanitarian' },
-    { name: 'International Relations', slug: 'international' },
-    { name: 'Technology', slug: 'technology' },
-    { name: 'Sports', slug: 'sports' },
-    { name: 'Culture', slug: 'culture' },
-  ];
+  const [categories, setCategories] = useState<{ name: string; slug: string }[]>([]);
+
+  useEffect(() => {
+    fetchAPI('/categories')
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setCategories(data.map((cat: any) => ({
+            name: cat.name,
+            slug: cat.slug,
+          })));
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load categories from Strapi, using fallback:', err);
+        setCategories([
+          { name: 'Politics', slug: 'politics' },
+          { name: 'Economy', slug: 'economy' },
+          { name: 'Humanitarian Affairs', slug: 'humanitarian' },
+          { name: 'International Relations', slug: 'international' },
+          { name: 'Technology', slug: 'technology' },
+          { name: 'Sports', slug: 'sports' },
+          { name: 'Culture', slug: 'culture' },
+        ]);
+      });
+  }, []);
 
   const handleSearchClick = () => {
     navigate('/search');
   };
 
   return (
-    <header className="w-full bg-white border-b border-brand-border">
+    <header className="w-full bg-blue-900 border-b border-gray-200">
       {/* Top Breaking News Bar */}
       <BreakingTicker />
 
       {/* Utilities Row: Date, Weather, Global Flag */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 text-xs font-ui tracking-wider text-brand-muted flex justify-between items-center border-b border-brand-border/60">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 text-xs font-ui tracking-wider text-white flex justify-between items-center border-b border-blue-800">
         <div className="flex items-center space-x-2">
-          <Globe className="h-3.5 w-3.5 text-brand-red" />
-          <span>Khartoum, Sudan</span>
-          <span className="hidden sm:inline">|</span>
-          <span className="hidden sm:inline">{formattedDate}</span>
+          <Globe className="h-3.5 w-3.5 text-white" />
+          <span className="text-white">Khartoum, Sudan</span>
+          <span className="hidden sm:inline text-gray-300">|</span>
+          <span className="hidden sm:inline text-white">{formattedDate}</span>
         </div>
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1.5 hidden md:flex">
-            <Sun className="h-3.5 w-3.5 text-amber-500" />
-            <span>Khartoum 38°C</span>
+            <Sun className="h-3.5 w-3.5 text-white" />
+            <span className="text-white">Khartoum 38°C</span>
           </div>
-          <span className="hidden md:inline text-brand-border">|</span>
+          <span className="hidden md:inline text-gray-300">|</span>
           <button 
             onClick={handleSearchClick}
-            className="flex items-center space-x-1.5 hover:text-brand-red transition-colors duration-200"
+            className="flex items-center space-x-1.5 hover:text-brand-red transition-colors duration-200 text-white hover:text-brand-red px-2 py-1"
             aria-label="Search articles"
           >
             <Search className="h-3.5 w-3.5" />
-            <span className="font-semibold">SEARCH</span>
+            <span className="font-semibold text-xs">SEARCH</span>
           </button>
         </div>
       </div>
 
       {/* Main Newspaper Title Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 text-center">
         <Link to="/" className="inline-block">
-          <h1 className="font-headline font-black text-4xl sm:text-6xl md:text-7xl tracking-tighter text-brand-dark uppercase hover:opacity-90 transition-opacity">
-            Sudan Times
+          <h1 className="font-headline font-black text-4xl sm:text-5xl md:text-6xl tracking-tight text-white uppercase hover:opacity-80 transition-opacity leading-tight">
+            <span>Sudan News</span>
+            <span className="text-white block text-3xl sm:text-4xl md:text-5xl">Today</span>
           </h1>
         </Link>
-        <p className="mt-1 text-[10px] sm:text-xs font-ui tracking-[0.25em] uppercase text-brand-muted font-bold">
-          The Pulse of the Nation • Independent & Truthful Journalism
+        <p className="mt-2 text-xs sm:text-sm font-ui tracking-wide text-white font-semibold">
+          Independent • Truthful • Journalism
         </p>
       </div>
 
-      {/* Desktop Navigation Row (Double Borders for Newspaper Style) */}
-      <div className="border-t-2 border-b border-brand-dark py-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-10">
+      {/* Desktop Navigation Row */}
+      <div className="border-t border-blue-800 border-b border-blue-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="flex justify-between items-center">
             {/* Desktop Categories */}
-            <nav className="hidden lg:flex space-x-6 xl:space-x-8 text-[13px] font-ui font-bold tracking-wider uppercase mx-auto">
+            <nav className="hidden lg:flex space-x-6 text-sm font-ui font-bold tracking-wider uppercase">
               <NavLink 
                 to="/" 
                 className={({ isActive }) => 
-                  isActive ? "text-brand-red" : "text-brand-dark hover:text-brand-red transition-colors"
+                  isActive ? "text-brand-red border-b-2 border-brand-red pb-1" : "text-white hover:text-gray-100 transition-colors pb-1"
                 }
               >
                 Home
@@ -94,7 +112,7 @@ export default function Header() {
                   key={cat.slug}
                   to={`/category/${cat.slug}`}
                   className={({ isActive }) =>
-                    isActive ? "text-brand-red" : "text-brand-dark hover:text-brand-red transition-colors"
+                    isActive ? "text-brand-red border-b-2 border-brand-red pb-1" : "text-white hover:text-gray-100 transition-colors pb-1"
                   }
                 >
                   {cat.name}
@@ -104,15 +122,12 @@ export default function Header() {
 
             {/* Mobile / Tablet Menu Button */}
             <div className="flex lg:hidden justify-between w-full items-center">
-              <div className="text-xs font-bold font-ui text-brand-muted sm:hidden">
-                {formattedDate}
-              </div>
-              <span className="hidden sm:inline-block text-xs font-bold text-brand-muted font-ui">
-                Independent Sudanese Journalism
+              <span className="hidden sm:inline-block text-xs font-bold text-white font-ui">
+                Independent Journalism
               </span>
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-brand-dark hover:text-brand-red hover:bg-gray-100 focus:outline-none"
+                className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-brand-red hover:bg-blue-800 focus:outline-none ml-auto"
                 aria-expanded={isOpen}
               >
                 {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -132,10 +147,10 @@ export default function Header() {
           ></div>
 
           {/* Menu Drawer Content */}
-          <div className="relative flex flex-col w-full max-w-xs bg-white h-full shadow-2xl p-6 border-r border-brand-border">
-            <div className="flex items-center justify-between pb-4 border-b border-brand-border mb-6">
-              <h2 className="font-headline font-bold text-2xl text-brand-dark uppercase tracking-tight">
-                Sudan Times
+          <div className="relative flex flex-col w-full max-w-xs bg-white h-full shadow-2xl p-6 border-r border-gray-200">
+            <div className="flex items-center justify-between pb-4 border-b border-gray-200 mb-6">
+              <h2 className="font-headline font-bold text-xl text-brand-dark uppercase tracking-tight">
+                Sudan News
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
@@ -145,11 +160,11 @@ export default function Header() {
               </button>
             </div>
 
-            <nav className="flex flex-col space-y-4 font-ui font-semibold text-base uppercase tracking-wider">
+            <nav className="flex flex-col space-y-3 font-ui font-semibold text-sm uppercase tracking-wider">
               <Link
                 to="/"
                 onClick={() => setIsOpen(false)}
-                className="hover:text-brand-red border-b border-brand-border pb-2"
+                className="text-brand-dark hover:text-brand-red border-b border-gray-100 pb-3 transition-colors"
               >
                 Home
               </Link>
@@ -158,7 +173,7 @@ export default function Header() {
                   key={cat.slug}
                   to={`/category/${cat.slug}`}
                   onClick={() => setIsOpen(false)}
-                  className="hover:text-brand-red border-b border-brand-border pb-2"
+                  className="text-brand-dark hover:text-brand-red border-b border-gray-100 pb-3 transition-colors"
                 >
                   {cat.name}
                 </Link>
@@ -166,7 +181,7 @@ export default function Header() {
               <Link
                 to="/search"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center space-x-2 text-brand-red pt-4"
+                className="flex items-center space-x-2 text-brand-blue pt-2 hover:text-brand-red transition-colors"
               >
                 <Search className="h-4 w-4" />
                 <span>Search Articles</span>

@@ -1,16 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ChevronRight, ArrowUpDown } from 'lucide-react';
-import articlesData from '../data/news.json';
+// Category page reads from backend API
 import ArticleCard from '../components/ArticleCard';
 import SeoTags from '../components/SeoTags';
+import { fetchAPI } from '../utils/api';
+import { StrapiArticle, StrapiCategory } from '../types/api';
 
 export default function CategoryPage() {
   const { name } = useParams();
   const [sortBy, setSortBy] = useState<'latest' | 'oldest' | 'views'>('latest');
-  const [filteredArticles, setFilteredArticles] = useState<typeof articlesData>([]);
+  const [allArticles, setAllArticles] = useState<StrapiArticle[]>([]);
+  const [filteredArticles, setFilteredArticles] = useState<StrapiArticle[]>([]);
+  const [categoryInfo, setCategoryInfo] = useState<StrapiCategory | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Map route slugs to database category strings
+  // Fallback: Map route slugs to database category strings (used when Strapi is unavailable)
   const getCategoryName = (paramName: string) => {
     const slug = paramName.toLowerCase();
     switch (slug) {
@@ -33,9 +38,7 @@ export default function CategoryPage() {
     }
   };
 
-  const dbCategoryName = getCategoryName(name || '');
-
-  // Category descriptive subtitle to give the page a custom editorial vibe
+  // Fallback: Category descriptive subtitle
   const getCategorySubtitle = (catName: string) => {
     switch (catName) {
       case 'Politics':
@@ -57,17 +60,68 @@ export default function CategoryPage() {
     }
   };
 
+  // Load all articles and category info from Strapi
   useEffect(() => {
-    if (dbCategoryName) {
-      let result = articlesData.filter(
-        (a) => a.category.toLowerCase() === dbCategoryName.toLowerCase()
-      );
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // Fetch all articles
+        const articlesResult = await fetchAPI('/articles', {
+          populate: '*',
+          'pagination[limit]': 100,
+        });
+
+        if (Array.isArray(articlesResult) && articlesResult.length > 0) setAllArticles(articlesResult);
+        else setAllArticles([]);
+
+        // Attempt to fetch category metadata
+        if (name) {
+          const catResult = await fetchAPI('/categories');
+          if (Array.isArray(catResult) && catResult.length > 0) {
+            const found = catResult.find((c: any) => c.slug === name || (c.name && c.name.toLowerCase().split(' ')[0] === name));
+            if (found) setCategoryInfo(found);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load from API:', err);
+        setAllArticles([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [name]);
+
+  // Derive display name from Strapi category or fallback
+  const dbCategoryName = categoryInfo?.name || getCategoryName(name || '');
+  const categorySubtitle = categoryInfo?.subtitle || getCategorySubtitle(dbCategoryName);
+  const deskLead = categoryInfo?.deskLead || 'Mohamed El-Fatih';
+  const deskEmail = categoryInfo?.deskEmail || 'desk.editor@sudantimes.news';
+
+  // Filter and sort articles when data or sort changes
+  useEffect(() => {
+    if (dbCategoryName && allArticles.length > 0) {
+      let result = allArticles.filter((a) => {
+        const catName = typeof a.category === 'object' && a.category !== null
+          ? a.category.name
+          : a.category;
+        return catName?.toLowerCase() === dbCategoryName.toLowerCase();
+      });
 
       // Apply sorting
       if (sortBy === 'latest') {
-        result.sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+        result.sort((a, b) => {
+          const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+          const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+          return dateB - dateA;
+        });
       } else if (sortBy === 'oldest') {
-        result.sort((a, b) => new Date(a.publishedAt).getTime() - new Date(b.publishedAt).getTime());
+        result.sort((a, b) => {
+          const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+          const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+          return dateA - dateB;
+        });
       } else if (sortBy === 'views') {
         result.sort((a, b) => b.views - a.views);
       }
@@ -76,12 +130,28 @@ export default function CategoryPage() {
     } else {
       setFilteredArticles([]);
     }
-  }, [dbCategoryName, sortBy]);
+  }, [dbCategoryName, sortBy, allArticles]);
 
   // Sidebar trending articles
-  const trendingArticles = [...articlesData]
+  const trendingArticles = [...allArticles]
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="animate-pulse space-y-6">
+          <div className="h-12 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-6 bg-gray-200 rounded w-2/3"></div>
+          <div className="space-y-4">
+            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
+            <div className="h-32 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (!dbCategoryName) {
     return (
@@ -92,7 +162,7 @@ export default function CategoryPage() {
         </p>
         <Link
           to="/"
-          className="inline-flex items-center px-6 py-3 bg-brand-red hover:bg-brand-dark text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
+          className="inline-flex items-center px-6 py-3 bg-brand-blue hover:bg-brand-red text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
         >
           Return to Homepage
         </Link>
@@ -105,7 +175,7 @@ export default function CategoryPage() {
       {/* Dynamic Metadata SEO sync */}
       <SeoTags
         title={`${dbCategoryName} News & Reports`}
-        description={getCategorySubtitle(dbCategoryName)}
+        description={categorySubtitle}
       />
 
       {/* Category Header Bar */}
@@ -119,7 +189,7 @@ export default function CategoryPage() {
           {dbCategoryName}
         </h1>
         <p className="mt-2 text-sm sm:text-base text-brand-muted font-body max-w-4xl">
-          {getCategorySubtitle(dbCategoryName)}
+          {categorySubtitle}
         </p>
       </div>
 
@@ -193,8 +263,8 @@ export default function CategoryPage() {
               Our {dbCategoryName} desk is headed by senior foreign correspondents on-site in Khartoum and Port Sudan. Send reporting pitches, letters to the editor, or corrections to the desk email.
             </p>
             <div className="mt-4 text-xs font-bold font-ui text-brand-red">
-              <span className="block">Lead: Mohamed El-Fatih</span>
-              <span className="text-brand-muted font-normal lowercase">desk.editor@sudantimes.news</span>
+              <span className="block">Lead: {deskLead}</span>
+              <span className="text-brand-muted font-normal lowercase">{deskEmail}</span>
             </div>
           </div>
 
@@ -204,24 +274,27 @@ export default function CategoryPage() {
               Most Read
             </h3>
             <div className="divide-y divide-brand-border/60">
-              {trendingArticles.map((art) => (
-                <div key={art.id} className="py-3.5 first:pt-0 last:pb-0">
-                  <span className="text-[9px] font-ui font-black uppercase text-brand-red tracking-widest block mb-0.5">
-                    {art.category}
-                  </span>
-                  <Link 
-                    to={`/article/${art.slug}`} 
-                    className="group"
-                  >
-                    <h4 className="font-headline font-bold text-sm text-brand-dark group-hover:text-brand-red transition-colors leading-snug">
-                      {art.title}
-                    </h4>
-                  </Link>
-                  <p className="text-[10px] text-brand-muted mt-1">
-                    {new Date(art.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {art.views.toLocaleString()} views
-                  </p>
-                </div>
-              ))}
+              {trendingArticles.map((art) => {
+                const artCat = typeof art.category === 'object' && art.category !== null ? art.category.name : art.category;
+                return (
+                  <div key={art.id} className="py-3.5 first:pt-0 last:pb-0">
+                    <span className="text-[9px] font-ui font-black uppercase text-brand-red tracking-widest block mb-0.5">
+                      {artCat}
+                    </span>
+                    <Link 
+                      to={`/article/${art.slug}`} 
+                      className="group"
+                    >
+                      <h4 className="font-headline font-bold text-sm text-brand-dark group-hover:text-brand-red transition-colors leading-snug">
+                        {art.title}
+                      </h4>
+                    </Link>
+                    <p className="text-[10px] text-brand-muted mt-1">
+                      {art.publishedAt ? new Date(art.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'N/A'} • {art.views?.toLocaleString() || 0} views
+                    </p>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

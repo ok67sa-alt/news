@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, X, SlidersHorizontal } from 'lucide-react';
-import articlesData from '../data/news.json';
+// Search reads from backend API
 import ArticleCard from '../components/ArticleCard';
 import SeoTags from '../components/SeoTags';
+import { fetchAPI } from '../utils/api';
+import { StrapiArticle } from '../types/api';
 
 export default function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -12,37 +14,70 @@ export default function SearchPage() {
   const [searchQuery, setSearchQuery] = useState(queryParam);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [sortBy, setSortBy] = useState<'latest' | 'views'>('latest');
-  const [results, setResults] = useState<typeof articlesData>([]);
+  const [allArticles, setAllArticles] = useState<StrapiArticle[]>([]);
+  const [results, setResults] = useState<StrapiArticle[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Update query state if search parameter updates via navigation
   useEffect(() => {
     setSearchQuery(queryParam);
   }, [queryParam]);
 
-  // Unique categories list for filters
-  const categoriesList = ['All', ...Array.from(new Set(articlesData.map((a) => a.category)))];
-
+  // Load all articles from Strapi once
   useEffect(() => {
-    let tempResults = [...articlesData];
+    fetchAPI('/articles', {
+      populate: '*',
+      'pagination[limit]': 100,
+    })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setAllArticles(data);
+        else setAllArticles([]);
+      })
+      .catch((err) => {
+        console.error('Failed to load articles from API:', err);
+        setAllArticles([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  // Unique categories list for filters
+  const categoriesList = ['All', ...Array.from(new Set(allArticles.map((a) => {
+    return typeof a.category === 'object' && a.category !== null ? a.category.name : (a.category || '');
+  })))];
+
+  // Filter and sort articles whenever search inputs change
+  useEffect(() => {
+    let tempResults = [...allArticles];
 
     // Filter by query string
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
-      tempResults = tempResults.filter(
-        (article) =>
+      tempResults = tempResults.filter((article) => {
+        const authorName = typeof article.author === 'object' && article.author !== null
+          ? article.author.name
+          : (article.author || '');
+        return (
           article.title.toLowerCase().includes(q) ||
-          article.category.toLowerCase().includes(q) ||
-          article.author.toLowerCase().includes(q) ||
+          (typeof article.category === 'object' && article.category !== null
+            ? article.category.name.toLowerCase().includes(q)
+            : (article.category || '').toLowerCase().includes(q)) ||
+          authorName.toLowerCase().includes(q) ||
           article.content.toLowerCase().includes(q) ||
           article.excerpt.toLowerCase().includes(q)
-      );
+        );
+      });
     }
 
     // Filter by category filter badge
     if (selectedCategory !== 'All') {
-      tempResults = tempResults.filter(
-        (article) => article.category === selectedCategory
-      );
+      tempResults = tempResults.filter((article) => {
+        const catName = typeof article.category === 'object' && article.category !== null
+          ? article.category.name
+          : article.category;
+        return catName === selectedCategory;
+      });
     }
 
     // Apply sorting
@@ -53,7 +88,7 @@ export default function SearchPage() {
     }
 
     setResults(tempResults);
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, selectedCategory, sortBy, allArticles]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,6 +99,22 @@ export default function SearchPage() {
     setSearchQuery('');
     setSearchParams({});
   };
+
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div className="animate-pulse space-y-6">
+          <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-12 bg-gray-200 rounded w-full"></div>
+          <div className="space-y-4">
+            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-ui">
@@ -128,7 +179,7 @@ export default function SearchPage() {
                   onClick={() => setSelectedCategory(cat)}
                   className={`px-3 py-1.5 text-xs font-semibold uppercase tracking-wider border rounded transition-all duration-200 ${
                     selectedCategory === cat
-                      ? 'bg-brand-red text-white border-brand-red shadow-sm'
+                      ? 'bg-brand-blue text-white border-brand-blue shadow-sm'
                       : 'bg-white text-brand-dark border-brand-border hover:bg-gray-100'
                   }`}
                 >
@@ -173,7 +224,7 @@ export default function SearchPage() {
               </p>
               <button
                 onClick={handleClearSearch}
-                className="px-5 py-2.5 bg-brand-dark hover:bg-brand-red text-white text-xs font-ui font-bold uppercase tracking-wider transition-colors duration-200"
+                className="px-5 py-2.5 bg-brand-blue hover:bg-brand-red text-white text-xs font-ui font-bold uppercase tracking-wider transition-colors duration-200"
               >
                 Clear Search Queries
               </button>
@@ -202,8 +253,8 @@ export default function SearchPage() {
             </ul>
           </div>
 
-          <div className="border border-brand-red/20 p-5 bg-brand-red/5 space-y-2 text-center">
-            <h4 className="font-headline font-bold text-sm text-brand-red uppercase">Official Press Portal</h4>
+          <div className="border border-brand-blue/20 p-5 bg-brand-blue/5 space-y-2 text-center">
+            <h4 className="font-headline font-bold text-sm text-brand-blue uppercase">Official Press Portal</h4>
             <p className="text-[11px] text-brand-muted leading-relaxed font-ui">
               Are you a diplomat, researcher, or NGO worker looking for high-resolution datasets? Contact our Sudan Times research department.
             </p>

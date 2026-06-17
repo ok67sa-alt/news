@@ -8,11 +8,13 @@ export default {
     extend: {
       colors: {
         brand: {
-          red: '#9B1C1C',      // Deep crimson news accent
-          dark: '#111111',     // Elegant body text
-          border: '#e5e5e5',   // Newspaper column lines
-          muted: '#555555',    // Bylines and captions
-          bgMuted: '#f9f9f9',  // Subtle background highlight
+          blue: '#1E3A8A',     // Deep blue from Sudan News logo
+          cyan: '#06D6D6',     // Cyan/turquoise from Sudan map
+          red: '#DC2626',      // Red from "TODAY" text
+          dark: '#0F172A',     // Dark slate
+          border: '#E2E8F0',   // Light border
+          muted: '#64748B',    // Muted text
+          bgMuted: '#F8FAFC',  // Light background
         }
       },
       fontFamily: {

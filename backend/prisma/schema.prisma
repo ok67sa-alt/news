@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  slug      String    @unique
+  subtitle  String?
+  deskLead  String?
+  deskEmail String?
+  articles  Article[]
+}
+enum Status {
+  DRAFT
+  REVIEW
+  PUBLISHED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  role      String   @default("EDITOR")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articles  Article[]
+}
+
+model Article {
+  id          Int       @id @default(autoincrement())
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String
+  readTime    String
+  featured    Boolean   @default(false)
+  breaking    Boolean   @default(false)
+  views       Int       @default(0)
+  image       String?   // Made optional for video-only articles
+  videoUrl    String?   // URL for embedded videos (YouTube, Facebook, Twitter/X, etc.)
+  videoFile   String?   // Path to uploaded video file
+  categoryId  Int? 
+  category    Category? @relation(fields: [categoryId], references: [id])
+  authorId    Int?
+  author      User?     @relation(fields: [authorId], references: [id])
+  authorRole  String?
+  publishedAt DateTime?
+  status      Status    @default(DRAFT)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}

@@ -20,7 +20,7 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
-      <div className="flex flex-col min-h-screen bg-white text-brand-dark selection:bg-brand-red selection:text-white">
+      <div className="flex flex-col min-h-screen bg-white text-brand-dark selection:bg-brand-blue selection:text-white">
         {/* Header containing masthead & navigation */}
         <Header />
         

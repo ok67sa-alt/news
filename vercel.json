@@ -1,8 +1,22 @@
 {
+  "version": 2,
+  "buildCommand": "npm run build",
+  "devCommand": "cd backend && npm run dev",
+  "installCommand": "npm install && cd backend && npm install",
+  "framework": "nextjs",
+  "outputDirectory": "backend/.next",
   "rewrites": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/admin/:path*"
+    },
+    {
+      "source": "/:path*",
+      "destination": "/:path*"
     }
   ]
 }

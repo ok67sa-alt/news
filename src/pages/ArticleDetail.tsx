@@ -1,26 +1,64 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Eye, Share2, ArrowLeft, Twitter, Facebook, Link as LinkIcon, Check } from 'lucide-react';
-import articlesData from '../data/news.json';
+// Articles now loaded from backend via `fetchAPI`
 import ArticleCard from '../components/ArticleCard';
+import VideoEmbed from '../components/VideoEmbed';
 import SeoTags from '../components/SeoTags';
 import { getImageUrl } from '../utils/imageResolver';
+import { parseEditorJsContent, isEditorJsContent } from '../utils/editorJsParser';
+import { fetchAPI, incrementArticleViews } from '../utils/api';
+import { StrapiArticle } from '../types/api';
 
 export default function ArticleDetail() {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
   const [localViews, setLocalViews] = useState(0);
+  const [articles, setArticles] = useState<StrapiArticle[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAPI('/articles', {
+      populate: '*',
+      sort: 'publishedAt:desc',
+      'pagination[limit]': 100
+    })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setArticles(data);
+        else setArticles([]);
+      })
+      .catch((err) => {
+        console.error('Failed to load articles from API:', err);
+        setArticles([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   // Find the current article
-  const article = articlesData.find((a) => a.slug === slug);
+  const article = articles.find((a) => a.slug === slug);
 
   useEffect(() => {
     if (article) {
-      // Simulate incrementing views locally for visual realism
+      // Simulate incrementing views locally and update backend
       setLocalViews(article.views + 1);
+      incrementArticleViews(article.id, article.views);
     }
-  }, [article]);
+  }, [article, articles]);
+
+  if (loading) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-24 text-center">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mx-auto"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto"></div>
+          <div className="h-64 bg-gray-200 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (!article) {
     return (
@@ -33,7 +71,7 @@ export default function ArticleDetail() {
         </p>
         <button
           onClick={() => navigate('/')}
-          className="inline-flex items-center px-6 py-3 bg-brand-red hover:bg-brand-dark text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
+          className="inline-flex items-center px-6 py-3 bg-brand-blue hover:bg-brand-red text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
         >
           <ArrowLeft className="h-4 w-4 mr-2" /> Return to Homepage
         </button>
@@ -42,15 +80,35 @@ export default function ArticleDetail() {
   }
 
   // Get related articles (same category, excluding this one)
-  const relatedArticles = articlesData
-    .filter((a) => a.category === article.category && a.id !== article.id)
+  const relatedArticles = articles
+    .filter((a) => {
+      const aCat = typeof a.category === 'object' && a.category !== null ? a.category.name : a.category;
+      const currentCat = typeof article.category === 'object' && article.category !== null ? article.category.name : article.category;
+      return aCat === currentCat && a.id !== article.id;
+    })
     .slice(0, 3);
 
   // Get trending articles (most read, excluding this one)
-  const trendingArticles = [...articlesData]
+  const trendingArticles = [...articles]
     .filter((a) => a.id !== article.id)
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
+
+  const categoryName = typeof article.category === 'object' && article.category !== null
+    ? article.category.name
+    : (article.category || '');
+
+  const categorySlug = typeof article.category === 'object' && article.category !== null
+    ? article.category.slug
+    : (article.category || '').toLowerCase().split(' ')[0];
+
+  const authorName = typeof article.author === 'object' && article.author !== null
+    ? article.author.name
+    : (article.author || '');
+
+  const authorRole = typeof article.author === 'object' && article.author !== null && article.author.role
+    ? article.author.role
+    : 'Special Correspondent, Khartoum';
 
   const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -69,7 +127,9 @@ export default function ArticleDetail() {
   const shareUrl = encodeURIComponent(window.location.href);
 
   // Split content by newline to render separate editorial paragraphs
-  const paragraphs = article.content.split('\n\n');
+  const paragraphs = isEditorJsContent(article.content) 
+    ? parseEditorJsContent(article.content)
+    : article.content.split('\n\n');
 
   return (
     <article className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 font-ui">
@@ -77,10 +137,10 @@ export default function ArticleDetail() {
       <SeoTags
         title={article.title}
         description={article.excerpt}
-        image={getImageUrl(article.image)}
+        image={getImageUrl(article.image, article.videoUrl, article.videoFile)}
         type="article"
         publishedTime={article.publishedAt}
-        author={article.author}
+        author={authorName}
       />
 
       {/* Back button */}
@@ -101,10 +161,10 @@ export default function ArticleDetail() {
           
           {/* Category Tag */}
           <Link 
-            to={`/category/${article.category.toLowerCase().split(' ')[0]}`}
-            className="inline-block text-xs font-bold uppercase tracking-widest text-brand-red bg-brand-red/5 px-2.5 py-1 rounded hover:bg-brand-red hover:text-white transition-all"
+            to={`/category/${categorySlug}`}
+            className="inline-block text-xs font-bold uppercase tracking-widest text-brand-blue bg-brand-blue/5 px-2.5 py-1 rounded hover:bg-brand-red hover:text-white transition-all"
           >
-            {article.category}
+            {categoryName}
           </Link>
 
           {/* Headline */}
@@ -121,11 +181,11 @@ export default function ArticleDetail() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-t border-b border-brand-border py-4 my-6 gap-4">
             <div className="flex items-center space-x-3">
               <div className="h-10 w-10 rounded-full bg-brand-bgMuted border border-brand-border flex items-center justify-center font-bold text-brand-red">
-                {article.author.split(' ').map(n => n[0]).join('')}
+                {authorName.split(' ').map(n => n[0]).join('')}
               </div>
               <div>
-                <p className="text-xs font-bold text-brand-dark">By {article.author}</p>
-                <p className="text-[10px] text-brand-muted">Special Correspondent, Khartoum</p>
+                <p className="text-xs font-bold text-brand-dark">By {authorName}</p>
+                <p className="text-[10px] text-brand-muted">{authorRole}</p>
               </div>
             </div>
 
@@ -147,11 +207,21 @@ export default function ArticleDetail() {
             </div>
           </div>
 
+          {/* Video Embed (if available) */}
+          {(article.videoUrl || article.videoFile) && (
+            <div className="space-y-2">
+              <VideoEmbed url={article.videoUrl} videoFile={article.videoFile} />
+              <p className="text-[11px] text-brand-muted italic font-ui leading-normal text-right">
+                Video content related to {article.title.toLowerCase()} / Embedded Media
+              </p>
+            </div>
+          )}
+
           {/* Hero Editorial Photography */}
           <div className="space-y-2">
             <div className="w-full aspect-[16/9] overflow-hidden bg-gray-100 border border-brand-border">
               <img
-                src={getImageUrl(article.image)}
+                src={getImageUrl(article.image, article.videoUrl, article.videoFile)}
                 alt={article.title}
                 className="w-full h-full object-cover"
               />
@@ -201,6 +271,20 @@ export default function ArticleDetail() {
           {/* Article Paragraphs with drop cap formatting */}
           <div className="font-body text-base sm:text-lg text-brand-dark leading-relaxed space-y-6 pt-4 max-w-none prose prose-serif">
             {paragraphs.map((para, index) => {
+              // Check if paragraph contains HTML tags
+              const isHtml = para.trim().startsWith('<');
+              
+              if (isHtml) {
+                // Render HTML content
+                return (
+                  <div 
+                    key={index} 
+                    dangerouslySetInnerHTML={{ __html: para }}
+                    className="text-justify"
+                  />
+                );
+              }
+              
               if (index === 0) {
                 // Apply Drop Cap style to the first paragraph
                 return (
@@ -271,7 +355,7 @@ export default function ArticleDetail() {
             </p>
             <Link 
               to="/" 
-              className="inline-block w-full py-2 bg-brand-dark hover:bg-brand-red text-white text-xs font-ui font-bold uppercase tracking-wider transition-colors text-center"
+              className="inline-block w-full py-2 bg-brand-blue hover:bg-brand-red text-white text-xs font-ui font-bold uppercase tracking-wider transition-colors text-center"
             >
               Go to Subscribe
             </Link>

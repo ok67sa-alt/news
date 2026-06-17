@@ -5,15 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev:backend": "cd backend && npm run dev",
+    "build": "vite build && node copy-frontend.js && cd backend && npm run build",
+    "build:frontend": "vite build && node copy-frontend.js",
+    "build:backend": "cd backend && npm run build",
+    "preview": "vite preview",
+    "start": "node start-production.js",
+    "start:backend": "cd backend && npm start",
+    "prisma:seed": "node backend/prisma/seed.cjs"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1069.0",
+    "@tinymce/tinymce-react": "^6.3.0",
+    "formidable": "^3.5.4",
+    "framer-motion": "^11.11.17",
+    "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^6.28.0",
-    "framer-motion": "^11.11.17",
-    "lucide-react": "^0.468.0"
+    "react-router-dom": "^6.28.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

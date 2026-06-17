@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="675" viewBox="0 0 1200 675">
+  <rect fill="#f1f5f9" width="1200" height="675"/>
+  <g opacity="0.1">
+    <rect fill="#1e3a8a" x="50" y="50" width="200" height="150" rx="8"/>
+    <rect fill="#1e3a8a" x="300" y="50" width="200" height="150" rx="8"/>
+    <rect fill="#1e3a8a" x="550" y="50" width="200" height="150" rx="8"/>
+    <rect fill="#1e3a8a" x="800" y="50" width="200" height="150" rx="8"/>
+  </g>
+  <text fill="#64748b" font-family="Arial, sans-serif" font-size="64" font-weight="bold" text-anchor="middle" x="600" y="300">
+    Sudan Times
+  </text>
+  <text fill="#94a3b8" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" x="600" y="350">
+    No Image Available
+  </text>
+  <circle fill="none" stroke="#cbd5e1" stroke-width="4" cx="600" cy="420" r="60"/>
+  <path fill="#cbd5e1" d="M600 380 L600 420 L640 420 Z"/>
+</svg>

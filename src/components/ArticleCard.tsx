@@ -1,20 +1,9 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye } from 'lucide-react';
-import { getImageUrl } from '../utils/imageResolver';
+import { getImageUrl, isVideoFile } from '../utils/imageResolver';
 
-interface Article {
-  id: number;
-  title: string;
-  slug: string;
-  category: string;
-  excerpt: string;
-  author: string;
-  publishedAt: string;
-  readTime: string;
-  views: number;
-  image: string;
-}
+import { Article } from '../types/api';
 
 interface ArticleCardProps {
   article: Article;
@@ -22,28 +11,36 @@ interface ArticleCardProps {
 }
 
 export default function ArticleCard({ article, layout = 'vertical' }: ArticleCardProps) {
-  const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
+  const formattedDate = new Date(article.publishedAt || new Date()).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   });
 
+  const categoryName = typeof article.category === 'object' && article.category !== null
+    ? article.category.name
+    : (article.category || '');
+
+  const authorName = typeof article.author === 'object' && article.author !== null
+    ? article.author.name
+    : (article.author || 'Sudan News');
+
   // Common metadata row
   const metaRow = (
-    <div className="flex items-center space-x-3 text-[11px] font-ui text-brand-muted mt-1.5 flex-wrap gap-y-1">
+    <div className="flex items-center space-x-3 text-xs font-ui text-gray-500 mt-3 flex-wrap gap-y-1">
       <span className="flex items-center space-x-1">
         <Calendar className="h-3 w-3" />
         <span>{formattedDate}</span>
       </span>
-      <span>•</span>
+      <span className="text-gray-300">•</span>
       <span className="flex items-center space-x-1">
         <Clock className="h-3 w-3" />
         <span>{article.readTime}</span>
       </span>
-      <span>•</span>
+      <span className="text-gray-300">•</span>
       <span className="flex items-center space-x-1">
         <Eye className="h-3 w-3" />
-        <span>{article.views.toLocaleString()}</span>
+        <span>{article.views?.toLocaleString() || 0}</span>
       </span>
     </div>
   );
@@ -56,10 +53,10 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="py-3.5 border-b border-brand-border/60 last:border-b-0"
+        className="py-3 border-b border-gray-200 last:border-b-0"
       >
-        <span className="text-[10px] font-ui font-black uppercase text-brand-red tracking-widest block mb-1">
-          {article.category}
+        <span className="text-xs font-ui font-bold uppercase text-brand-red tracking-wide block mb-1">
+          {categoryName}
         </span>
         <Link 
           to={`/article/${article.slug}`} 
@@ -82,14 +79,14 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
         whileInView={{ opacity: 1, x: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
-        className="flex items-start py-3.5 border-b border-brand-border/60 last:border-b-0 gap-3"
+        className="flex items-start py-3 border-b border-gray-200 last:border-b-0 gap-3"
       >
-        <span className="font-headline text-2xl font-black text-brand-border select-none mt-1 min-w-[24px]">
+        <span className="font-headline text-2xl font-black text-gray-300 select-none mt-1 min-w-[32px]">
           {String(article.id).padStart(2, '0')}
         </span>
         <div className="flex-1">
-          <span className="text-[9px] font-ui font-bold uppercase text-brand-red tracking-wider block mb-0.5">
-            {article.category}
+          <span className="text-xs font-ui font-bold uppercase text-brand-red tracking-wider block mb-1">
+            {categoryName}
           </span>
           <Link 
             to={`/article/${article.slug}`} 
@@ -99,12 +96,12 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
               {article.title}
             </h4>
           </Link>
-          <div className="flex items-center space-x-2 text-[10px] font-ui text-brand-muted mt-1">
-            <span>By {article.author}</span>
+          <div className="flex items-center space-x-2 text-xs font-ui text-gray-500 mt-1.5">
+            <span>By {authorName}</span>
             <span>•</span>
             <span className="flex items-center space-x-0.5">
               <Eye className="h-2.5 w-2.5" />
-              <span>{article.views.toLocaleString()}</span>
+              <span>{article.views?.toLocaleString() || 0}</span>
             </span>
           </div>
         </div>
@@ -114,44 +111,70 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
 
   // Horizontal row layout
   if (layout === 'horizontal') {
+    const hasVideoOnly = !article.image && (article.videoUrl || article.videoFile);
+    const isUploadedVideo = article.videoFile && !article.videoUrl;
+    
     return (
       <motion.div
         initial={{ opacity: 0, y: 15 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.5 }}
-        className="flex flex-col sm:flex-row gap-4 py-5 border-b border-brand-border/80 last:border-b-0 items-start"
+        className="flex flex-col sm:flex-row gap-4 py-4 border-b border-gray-200 last:border-b-0 items-start"
       >
-        {/* Thumbnail Image */}
+        {/* Thumbnail Image or Video */}
         <Link 
           to={`/article/${article.slug}`} 
-          className="w-full sm:w-1/3 md:w-1/4 aspect-[3/2] overflow-hidden bg-gray-100 block shrink-0 border border-brand-border"
+          className="w-full sm:w-1/3 md:w-1/4 aspect-video overflow-hidden bg-black block shrink-0 border border-gray-200 relative group"
         >
-          <img
-            src={getImageUrl(article.image)}
-            alt={article.title}
-            loading="lazy"
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 ease-out"
-          />
+          {hasVideoOnly && isUploadedVideo ? (
+            // Show actual video player for uploaded videos
+            <video 
+              className="w-full h-full object-cover"
+              preload="metadata"
+              poster=""
+            >
+              <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/mp4" />
+              <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/webm" />
+            </video>
+          ) : (
+            // Show image or YouTube thumbnail
+            <img
+              src={getImageUrl(article.image, article.videoUrl, article.videoFile)}
+              alt={article.title}
+              loading="lazy"
+              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300 ease-out"
+            />
+          )}
+          {/* Video indicator overlay */}
+          {hasVideoOnly && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+              <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                <svg className="w-8 h-8 text-brand-red ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+            </div>
+          )}
         </Link>
 
         {/* Content details */}
-        <div className="flex-1 space-y-1.5">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-ui font-black uppercase text-brand-red tracking-widest">
-              {article.category}
+        <div className="flex-1 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-ui font-bold uppercase text-white bg-brand-blue px-2 py-1 rounded w-fit">
+              {categoryName}
             </span>
-            <span className="text-[10px] font-ui text-brand-muted">By {article.author}</span>
+            <span className="text-xs font-ui text-gray-500">By {authorName}</span>
           </div>
           <Link 
             to={`/article/${article.slug}`} 
             className="group block"
           >
-            <h3 className="font-headline font-bold text-lg sm:text-xl text-brand-dark group-hover:text-brand-red transition-colors leading-tight">
+            <h3 className="font-headline font-bold text-base sm:text-lg text-brand-dark group-hover:text-brand-red transition-colors leading-tight">
               {article.title}
             </h3>
           </Link>
-          <p className="text-xs text-brand-muted font-body leading-relaxed max-w-2xl">
+          <p className="text-sm text-gray-600 leading-relaxed max-w-2xl line-clamp-2">
             {article.excerpt}
           </p>
           {metaRow}
@@ -160,48 +183,75 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
     );
   }
 
-  // Default Vertical block layout
+  // Default Vertical card layout
+  const hasVideoOnly = !article.image && (article.videoUrl || article.videoFile);
+  const isUploadedVideo = article.videoFile && !article.videoUrl;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col h-full bg-white border border-brand-border/40 hover:border-brand-border/80 transition-all p-3 sm:p-4 shadow-sm hover:shadow"
+      className="flex flex-col h-full bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
     >
-      {/* Image Container */}
+      {/* Image Container or Video */}
       <Link 
         to={`/article/${article.slug}`} 
-        className="w-full aspect-[16/10] overflow-hidden bg-gray-100 block border border-brand-border/60"
+        className="w-full aspect-video overflow-hidden bg-black block border-b border-gray-200 relative group"
       >
-        <img
-          src={getImageUrl(article.image)}
-          alt={article.title}
-          loading="lazy"
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 ease-out"
-        />
+        {hasVideoOnly && isUploadedVideo ? (
+          // Show actual video player for uploaded videos
+          <video 
+            className="w-full h-full object-cover"
+            preload="metadata"
+            poster=""
+          >
+            <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/mp4" />
+            <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/webm" />
+          </video>
+        ) : (
+          // Show image or YouTube thumbnail
+          <img
+            src={getImageUrl(article.image, article.videoUrl, article.videoFile)}
+            alt={article.title}
+            loading="lazy"
+            className="w-full h-full object-cover hover:scale-110 transition-transform duration-300 ease-out"
+          />
+        )}
+        {/* Video indicator overlay */}
+        {hasVideoOnly && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+            <div className="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+              <svg className="w-8 h-8 text-brand-red ml-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        )}
       </Link>
 
-      {/* Card Content details */}
-      <div className="flex flex-col flex-1 pt-3">
-        <div className="flex justify-between items-center text-[10px] font-ui font-bold tracking-widest text-brand-red uppercase mb-1">
-          <span>{article.category}</span>
-          <span className="text-brand-muted font-normal lowercase">by {article.author}</span>
-        </div>
+      {/* Card Content */}
+      <div className="flex flex-col flex-1 p-4">
+        <span className="text-xs font-bold tracking-wider text-white bg-brand-blue px-2 py-1 rounded inline-block w-fit mb-2">
+          {categoryName}
+        </span>
+        
         <Link 
           to={`/article/${article.slug}`} 
-          className="group block mb-1.5"
+          className="group block mb-2"
         >
-          <h3 className="font-headline font-bold text-base sm:text-lg text-brand-dark group-hover:text-brand-red transition-colors leading-snug">
+          <h3 className="font-headline font-bold text-lg text-brand-dark group-hover:text-brand-red transition-colors leading-snug line-clamp-3">
             {article.title}
           </h3>
         </Link>
-        <p className="text-xs text-brand-muted font-body leading-relaxed mb-4 flex-grow line-clamp-3">
+        
+        <p className="text-sm text-gray-600 leading-relaxed mb-3 flex-grow line-clamp-2">
           {article.excerpt}
         </p>
         
-        {/* Footer row metadata */}
-        <div className="pt-2 border-t border-brand-border/50 mt-auto">
+        {/* Footer metadata */}
+        <div className="pt-3 border-t border-gray-100 mt-auto">
           {metaRow}
         </div>
       </div>

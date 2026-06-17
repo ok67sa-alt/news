@@ -1,9 +1,25 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import articlesData from '../data/news.json';
+import { fetchAPI } from '../utils/api';
+import { StrapiArticle } from '../types/api';
 
 export default function BreakingTicker() {
-  // Filter for breaking news articles
-  const breakingArticles = articlesData.filter((article) => article.breaking);
+  const [breakingArticles, setBreakingArticles] = useState<StrapiArticle[]>([]);
+
+  useEffect(() => {
+    fetchAPI('/articles', {
+      'filters[breaking][$eq]': true,
+      'populate': '*',
+    })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setBreakingArticles(data);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load breaking articles:', err);
+      });
+  }, []);
 
   if (breakingArticles.length === 0) return null;
 
@@ -11,24 +27,23 @@ export default function BreakingTicker() {
   const doubledArticles = [...breakingArticles, ...breakingArticles, ...breakingArticles];
 
   return (
-    <div className="w-full bg-brand-dark text-white border-b border-brand-dark flex items-center h-9 overflow-hidden select-none">
-      {/* High-visibility blinking red badge */}
-      <div className="bg-brand-red text-white text-[10px] font-ui font-black px-4 py-2 uppercase tracking-widest z-10 flex items-center shrink-0 h-full border-r border-brand-red relative after:absolute after:right-0 after:top-0 after:bottom-0 after:w-4 after:bg-brand-red after:rotate-12 after:translate-x-2">
-        <span className="animate-pulse mr-1">●</span> Breaking News
+    <div className="w-full bg-brand-red text-white border-b-2 border-brand-red flex items-center h-8 overflow-hidden select-none">
+      {/* High-visibility blinking badge */}
+      <div className="bg-brand-blue text-white text-[10px] font-ui font-black px-3 py-1.5 uppercase tracking-wider z-10 flex items-center shrink-0 h-full border-r border-brand-red">
+        <span className="animate-pulse mr-1">●</span> BREAKING
       </div>
 
       {/* Infinite Scrolling Track */}
-      <div className="relative flex items-center overflow-hidden w-full h-full text-[13px] font-ui tracking-wide">
-        <div className="animate-ticker flex items-center space-x-16">
+      <div className="relative flex items-center overflow-hidden w-full h-full text-xs font-ui tracking-wide pl-4">
+        <div className="animate-ticker flex items-center space-x-8">
           {doubledArticles.map((article, idx) => (
             <Link
               key={`${article.id}-${idx}`}
               to={`/article/${article.slug}`}
-              className="hover:text-brand-red hover:underline transition-colors flex items-center space-x-2 shrink-0 font-medium"
+              className="hover:underline transition-colors flex items-center space-x-1 shrink-0 font-semibold"
             >
-              <span className="text-brand-red font-black text-sm">/</span>
-              <span>{article.title}</span>
-              <span className="text-xs text-gray-400 font-normal">({article.readTime})</span>
+              <span className="text-white font-black">›</span>
+              <span className="whitespace-nowrap">{article.title}</span>
             </Link>
           ))}
         </div>

@@ -1,34 +1,60 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, Clock, Eye, ChevronRight, TrendingUp } from 'lucide-react';
-import articlesData from '../data/news.json';
+// Front-end now reads articles from backend via `fetchAPI`
 import ArticleCard from '../components/ArticleCard';
 import SeoTags from '../components/SeoTags';
 import { getImageUrl } from '../utils/imageResolver';
+import { fetchAPI } from '../utils/api';
+import { StrapiArticle } from '../types/api';
 
 export default function Home() {
+  const [articles, setArticles] = useState<StrapiArticle[]>([]);
+  const [loading, setLoading] = useState(true);
   const [visibleLatestCount, setVisibleLatestCount] = useState(8);
 
+  useEffect(() => {
+    fetchAPI('/articles', {
+      populate: '*',
+      sort: 'publishedAt:desc',
+      'pagination[limit]': 100,
+    })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) setArticles(data);
+        else setArticles([]);
+      })
+      .catch((err) => {
+        console.error('Failed to load articles from API:', err);
+        setArticles([]);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
   // 1. Identify the Main Hero Story (Highest views among featured articles)
-  const featuredArticles = articlesData.filter((a) => a.featured);
+  const featuredArticles = articles.filter((a) => a.featured);
   const heroArticle = [...featuredArticles].sort((a, b) => b.views - a.views)[0];
 
   // 2. Identify Top Stories (Next 6 featured articles, sorted by views descending)
-  const topStories = [...featuredArticles]
-    .filter((a) => a.id !== heroArticle.id)
-    .sort((a, b) => b.views - a.views)
-    .slice(0, 6);
+  const topStories = heroArticle
+    ? [...featuredArticles]
+        .filter((a) => a.id !== heroArticle.id)
+        .sort((a, b) => b.views - a.views)
+        .slice(0, 6)
+    : [];
 
   // 3. Trending News (Top 10 most viewed overall)
-  const trendingArticles = [...articlesData]
+  const trendingArticles = [...articles]
     .sort((a, b) => b.views - a.views)
     .slice(0, 10);
 
   // 4. Retrieve latest 4 articles for specific categories
   const getCategoryArticles = (catName: string) => {
-    return [...articlesData]
-      .filter((a) => a.category.toLowerCase() === catName.toLowerCase())
-      .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    return [...articles]
+      .filter((a) => {
+        const categoryName = typeof a.category === 'object' && a.category !== null ? a.category.name : a.category;
+        return categoryName?.toLowerCase() === catName.toLowerCase();
+      })
+      .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime())
       .slice(0, 4);
   };
 
@@ -39,8 +65,8 @@ export default function Home() {
   const cultureArticles = getCategoryArticles('Culture');
 
   // 5. Latest News (All articles sorted by date descending)
-  const latestArticles = [...articlesData]
-    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
+  const latestArticles = [...articles]
+    .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime());
 
   const displayedLatest = latestArticles.slice(0, visibleLatestCount);
 
@@ -48,7 +74,24 @@ export default function Home() {
     setVisibleLatestCount((prev) => Math.min(prev + 8, latestArticles.length));
   };
 
-  const formattedHeroDate = new Date(heroArticle.publishedAt).toLocaleDateString('en-US', {
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">
+        <div className="animate-pulse space-y-8">
+          <div className="h-96 bg-gray-200 rounded w-full"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!heroArticle) return null;
+
+  const formattedHeroDate = new Date(heroArticle.publishedAt || Date.now()).toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',
@@ -66,16 +109,39 @@ export default function Home() {
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8 border-b border-brand-border">
         {/* Left & Center: Main Hero Story */}
         <div className="lg:col-span-2 space-y-4 lg:pr-6 lg:border-r border-brand-border/60">
-          <span className="text-xs font-ui font-black uppercase text-brand-red tracking-widest bg-brand-red/5 px-2.5 py-1 rounded inline-block">
+          <span className="text-xs font-ui font-black uppercase text-brand-blue tracking-widest bg-brand-blue/5 px-2.5 py-1 rounded inline-block">
             Featured Coverage
           </span>
           <Link to={`/article/${heroArticle.slug}`} className="group block space-y-4">
-            <div className="w-full aspect-[16/9] overflow-hidden bg-gray-100 border border-brand-border">
-              <img
-                src={getImageUrl(heroArticle.image)}
-                alt={heroArticle.title}
-                className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
-              />
+            <div className="w-full aspect-[16/9] overflow-hidden bg-black border border-brand-border relative">
+              {!heroArticle.image && heroArticle.videoFile && !heroArticle.videoUrl ? (
+                // Show actual video player for uploaded videos
+                <video 
+                  className="w-full h-full object-cover"
+                  preload="metadata"
+                  poster=""
+                >
+                  <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/mp4" />
+                  <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/webm" />
+                </video>
+              ) : (
+                // Show image or YouTube thumbnail
+                <img
+                  src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)}
+                  alt={heroArticle.title}
+                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                />
+              )}
+              {/* Video indicator overlay */}
+              {!heroArticle.image && (heroArticle.videoUrl || heroArticle.videoFile) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
+                  <div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                    <svg className="w-10 h-10 text-brand-red ml-1" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </div>
+                </div>
+              )}
             </div>
             <h2 className="font-headline font-black text-3xl sm:text-4xl md:text-5xl text-brand-dark group-hover:text-brand-red transition-colors leading-tight tracking-tight">
               {heroArticle.title}
@@ -86,7 +152,7 @@ export default function Home() {
           </p>
           <div className="flex items-center justify-between text-xs font-ui text-brand-muted pt-2 flex-wrap gap-2">
             <div className="flex items-center space-x-3">
-              <span className="font-bold text-brand-dark">By {heroArticle.author}</span>
+              <span className="font-bold text-brand-dark">By {typeof heroArticle.author === 'object' && heroArticle.author !== null ? heroArticle.author.name : (heroArticle.author || 'Sudan News')}</span>
               <span>•</span>
               <span className="flex items-center space-x-1">
                 <Calendar className="h-3.5 w-3.5" />
@@ -100,7 +166,7 @@ export default function Home() {
             </div>
             <Link 
               to={`/article/${heroArticle.slug}`}
-              className="inline-flex items-center px-4 py-2 bg-brand-red hover:bg-brand-dark text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
+              className="inline-flex items-center px-4 py-2 bg-brand-blue hover:bg-brand-red text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
             >
               Read Full Article <ChevronRight className="ml-1 h-3.5 w-3.5" />
             </Link>
@@ -113,13 +179,13 @@ export default function Home() {
             Editor's Picks
           </h3>
           <div className="divide-y divide-brand-border/60">
-            {articlesData
-              .filter((a) => a.featured && a.id !== heroArticle.id)
-              .slice(0, 4)
-              .map((article) => (
+              {articles
+                .filter((a) => a.featured && a.id !== heroArticle.id)
+                .slice(0, 4)
+                .map((article) => (
                 <div key={article.id} className="py-4 first:pt-0 last:pb-0">
                   <span className="text-[10px] font-ui font-black uppercase text-brand-red tracking-widest block mb-1">
-                    {article.category}
+                    {typeof article.category === 'object' && article.category !== null ? article.category.name : (article.category || '')}
                   </span>
                   <Link 
                     to={`/article/${article.slug}`} 
@@ -130,7 +196,7 @@ export default function Home() {
                     </h4>
                   </Link>
                   <div className="flex items-center space-x-3 text-[10px] font-ui text-brand-muted mt-2">
-                    <span>By {article.author}</span>
+                    <span>By {typeof article.author === 'object' && article.author !== null ? article.author.name : (article.author || 'Sudan News')}</span>
                     <span>•</span>
                     <span className="flex items-center space-x-0.5">
                       <Eye className="h-3 w-3" />
@@ -337,7 +403,7 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-8 bg-brand-red text-white p-6 text-center space-y-4">
+            <div className="mt-8 bg-brand-blue text-white p-6 text-center space-y-4">
               <h4 className="font-headline text-lg font-bold uppercase tracking-tight">SUDAN TIMES APP</h4>
               <p className="text-xs leading-relaxed opacity-90 font-ui">
                 Read breaking reports on-the-go. Secure connection, custom bookmarks, and offline database reading.

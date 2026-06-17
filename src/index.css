@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply font-ui bg-white text-brand-dark antialiased selection:bg-brand-red selection:text-white;
+    @apply font-ui bg-white text-brand-dark antialiased selection:bg-brand-blue selection:text-white;
   }
   
   h1, h2, h3, h4, h5, h6 {
@@ -22,11 +22,11 @@
 
 @media (min-width: 768px) {
   .newspaper-divider-right {
-    border-right: 1px solid #e5e5e5;
+    border-right: 1px solid #E5E7EB;
     padding-right: 1.5rem;
   }
   .newspaper-divider-left {
-    border-left: 1px solid #e5e5e5;
+    border-left: 1px solid #E5E7EB;
     padding-left: 1.5rem;
   }
 }
@@ -40,7 +40,7 @@
   padding-top: 6px;
   padding-right: 12px;
   padding-left: 4px;
-  color: #9B1C1C; /* Brand Accent Crimson */
+  color: #DC2626; /* Brand Accent Red */
   font-weight: 700;
 }
 
@@ -51,16 +51,16 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #f9f9f9;
+  background: #F3F4F6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #c5c5c5;
+  background: #D1D5DB;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9B1C1C;
+  background: #1E3A8A;
 }
 
 /* Moving ticker animation */
