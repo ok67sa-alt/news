@@ -24,7 +24,7 @@ const nextConfig = {
   async rewrites() {
     return {
       beforeFiles: [
-        // Admin routes stay in Next.js
+        // Admin routes stay in Next.js (must come BEFORE the catch-all)
         {
           source: '/admin/:path*',
           destination: '/admin/:path*',
@@ -36,9 +36,9 @@ const nextConfig = {
         },
       ],
       afterFiles: [
-        // Serve frontend SPA - all other routes go to index.html
+        // Serve frontend SPA - all OTHER routes (not admin/api) go to index.html
         {
-          source: '/:path*',
+          source: '/((?!admin|api|_next|uploads).*)',
           destination: '/index.html',
         },
       ],
