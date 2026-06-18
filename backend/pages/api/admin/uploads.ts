@@ -20,6 +20,9 @@ const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
 
 async function saveToLocal(file: formidable.File): Promise<string> {
+  // IMPORTANT: In production (Railway, Vercel, etc.), uploads to local filesystem
+  // are EPHEMERAL and will be lost on redeployment. Use S3 for production!
+  
   const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
   if (!fs.existsSync(uploadsDir)) {
     fs.mkdirSync(uploadsDir, { recursive: true });
@@ -39,6 +42,11 @@ async function saveToLocal(file: formidable.File): Promise<string> {
     await fs.promises.unlink(file.filepath);
   } catch (err) {
     console.warn('Failed to delete temp file:', err);
+  }
+
+  // In production, warn about ephemeral storage
+  if (process.env.NODE_ENV === 'production' && !process.env.S3_BUCKET) {
+    console.warn('⚠️  WARNING: Uploading to local storage in production! Files will be lost on redeployment. Configure S3 for persistent storage.');
   }
 
   return `/uploads/${uniqueName}`;
