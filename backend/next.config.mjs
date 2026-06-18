@@ -1,7 +1,6 @@
 const nextConfig = {
-  reactStrictMode: false, // Disable in development for faster reload
+  reactStrictMode: false,
   
-  // Skip type checking and linting during build (faster builds)
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -9,7 +8,6 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Optimize images
   images: {
     remotePatterns: [
       {
@@ -20,54 +18,14 @@ const nextConfig = {
     minimumCacheTTL: 60,
   },
   
-  // Configure rewrites to serve frontend from root and admin from /admin
+  // Simpler rewrites - only for root path
   async rewrites() {
-    return {
-      beforeFiles: [
-        // Admin routes stay in Next.js (must come BEFORE the catch-all)
-        {
-          source: '/admin/:path*',
-          destination: '/admin/:path*',
-        },
-        // API routes stay in Next.js
-        {
-          source: '/api/:path*',
-          destination: '/api/:path*',
-        },
-      ],
-      afterFiles: [
-        // Serve frontend SPA - all OTHER routes (not admin/api) go to index.html
-        {
-          source: '/((?!admin|api|_next|uploads).*)',
-          destination: '/index.html',
-        },
-      ],
-      fallback: [],
-    };
-  },
-  
-  // Configure headers for frontend SPA
-  async headers() {
     return [
       {
-        source: '/:path*',
-        headers: [
-          {
-            key: 'X-DNS-Prefetch-Control',
-            value: 'on',
-          },
-        ],
+        source: '/',
+        destination: '/index.html',
       },
     ];
-  },
-  
-  // Faster dev server (Turbopack compatible)
-  webpack: (config, { dev, isServer }) => {
-    if (dev && !process.env.TURBOPACK) {
-      // Only apply webpack config when NOT using Turbopack
-      config.devtool = 'cheap-module-source-map';
-    }
-    return config;
   },
 };
 
