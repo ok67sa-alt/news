@@ -9,12 +9,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow Next.js internal routes
+  // Allow Next.js internal routes and static assets with caching
   if (pathname.startsWith('/_next') || pathname.startsWith('/uploads')) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    // Cache static assets for 1 year
+    if (pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/)) {
+      response.headers.set('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+    return response;
   }
 
-  // For all other routes (frontend SPA), serve index.html
+  // For all other routes (frontend SPA), serve index.html with no-cache headers
   if (
     !pathname.includes('.') && // Not a file with extension
     pathname !== '/' && // Root is handled separately
@@ -24,10 +29,23 @@ export function middleware(request: NextRequest) {
     // Rewrite to index.html for SPA routing
     const url = request.nextUrl.clone();
     url.pathname = '/index.html';
-    return NextResponse.rewrite(url);
+    const response = NextResponse.rewrite(url);
+    // Prevent caching of HTML to ensure users get latest version
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+    return response;
   }
 
-  return NextResponse.next();
+  // For root and other static files
+  const response = NextResponse.next();
+  // Prevent HTML caching
+  if (pathname === '/' || pathname.endsWith('.html')) {
+    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    response.headers.set('Pragma', 'no-cache');
+    response.headers.set('Expires', '0');
+  }
+  return response;
 }
 
 export const config = {
