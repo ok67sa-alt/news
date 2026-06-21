@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../components/AdminLayout';
+import { withAuth } from '../../lib/withAuth';
 
-export default function UsersPage() {
+function UsersPage({ user }: { user: any }) {
   const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -324,3 +325,6 @@ export default function UsersPage() {
     </AdminLayout>
   );
 }
+
+// Protect this page - only admins can access
+export default withAuth(UsersPage, { requireAdmin: true });

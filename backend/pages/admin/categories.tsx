@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AdminLayout from '../../components/AdminLayout';
+import { withAuth } from '../../lib/withAuth';
 
-export default function CategoriesPage() {
+function CategoriesPage({ user }: { user: any }) {
   const router = useRouter();
   const [cats, setCats] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,3 +152,6 @@ export default function CategoriesPage() {
     </AdminLayout>
   );
 }
+
+// Protect this page - require authentication
+export default withAuth(CategoriesPage);

@@ -3,8 +3,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { cleanArticles } from '../../lib/cleanApiResponse';
 import AdminLayout from '../../components/AdminLayout';
+import { withAuth } from '../../lib/withAuth';
 
-export default function ArticlesPage() {
+function ArticlesPage({ user }: { user: any }) {
   const router = useRouter();
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -136,3 +137,6 @@ export default function ArticlesPage() {
     </AdminLayout>
   );
 }
+
+// Protect this page - require authentication
+export default withAuth(ArticlesPage);

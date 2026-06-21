@@ -2,50 +2,44 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import AdminLayout from '../../components/AdminLayout';
+import { withAuth } from '../../lib/withAuth';
 
-export default function AdminIndex() {
+function AdminIndex({ user: authUser }: { user: any }) {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
   const [stats, setStats] = useState({ articles: 0, categories: 0, users: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      const res = await fetch('/api/auth/me');
-      const j = await res.json();
-      if (!j.user) {
-        router.push('/admin/login');
-        return;
-      }
-      setUser(j.user);
-      
-      // Load stats
-      try {
-        const [articlesRes, categoriesRes, usersRes] = await Promise.all([
-          fetch('/api/articles'),
-          fetch('/api/categories'),
-          fetch('/api/users')
-        ]);
-        
-        const articles = articlesRes.ok ? await articlesRes.json() : [];
-        const categories = categoriesRes.ok ? await categoriesRes.json() : [];
-        const users = usersRes.ok ? await usersRes.json() : [];
-        
-        setStats({
-          articles: Array.isArray(articles) ? articles.length : 0,
-          categories: Array.isArray(categories) ? categories.length : 0,
-          users: Array.isArray(users) ? users.length : 0
-        });
-      } catch (error) {
-        console.error('Failed to load stats:', error);
-        setStats({ articles: 0, categories: 0, users: 0 });
-      }
-      
-      setLoading(false);
-    })();
+    loadStats();
   }, []);
 
-  if (!user || loading) {
+  const loadStats = async () => {
+    // Load stats
+    try {
+      const [articlesRes, categoriesRes, usersRes] = await Promise.all([
+        fetch('/api/articles'),
+        fetch('/api/categories'),
+        fetch('/api/users')
+      ]);
+      
+      const articles = articlesRes.ok ? await articlesRes.json() : [];
+      const categories = categoriesRes.ok ? await categoriesRes.json() : [];
+      const users = usersRes.ok ? await usersRes.json() : [];
+      
+      setStats({
+        articles: Array.isArray(articles) ? articles.length : 0,
+        categories: Array.isArray(categories) ? categories.length : 0,
+        users: Array.isArray(users) ? users.length : 0
+      });
+    } catch (error) {
+      console.error('Failed to load stats:', error);
+      setStats({ articles: 0, categories: 0, users: 0 });
+    }
+    
+    setLoading(false);
+  };
+
+  if (loading) {
     return (
       <div className="loading">
         <div className="spinner"></div>
@@ -59,11 +53,11 @@ export default function AdminIndex() {
       <div className="card mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold mb-2">مرحباً بك، {user.name || user.email}! 👋</h2>
+            <h2 className="text-2xl font-bold mb-2">مرحباً بك، {authUser.name || authUser.email}! 👋</h2>
             <p className="muted">نظرة عامة على نظام إدارة المحتوى الخاص بك</p>
           </div>
           <div className="badge badge-primary" style={{ fontSize: '0.875rem', padding: '0.5rem 1rem' }}>
-            {user.role === 'ADMIN' ? 'مدير' : 'محرر'}
+            {authUser.role === 'ADMIN' ? 'مدير' : 'محرر'}
           </div>
         </div>
       </div>
@@ -191,3 +185,6 @@ export default function AdminIndex() {
     </AdminLayout>
   );
 }
+
+// Protect this page - require authentication
+export default withAuth(AdminIndex);

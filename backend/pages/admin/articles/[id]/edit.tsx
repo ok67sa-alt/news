@@ -3,10 +3,11 @@ import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { cleanArticle, prepareArticleForSubmission } from '../../../../lib/cleanApiResponse';
 import AdminLayout from '../../../../components/AdminLayout';
+import { withAuth } from '../../../../lib/withAuth';
 
 const EditorJSComponent = dynamic(() => import('../../../../components/EditorJSComponent'), { ssr: false });
 
-export default function EditArticle() {
+function EditArticle({ user }: { user: any }) {
   const router = useRouter();
   const { id } = router.query;
   const [loading, setLoading] = useState(true);
@@ -316,3 +317,6 @@ export default function EditArticle() {
     </AdminLayout>
   );
 }
+
+// Protect this page - require authentication
+export default withAuth(EditArticle);

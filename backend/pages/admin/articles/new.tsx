@@ -8,8 +8,9 @@ import dynamic from 'next/dynamic';
 
 // Dynamic import to avoid SSR issues
 const EditorJSComponent = dynamic(() => import('../../../components/EditorJSComponent'), { ssr: false });
+import { withAuth } from '../../../lib/withAuth';
 
-export default function NewArticle() {
+function NewArticle({ user }: { user: any }) {
   const router = useRouter();
   const [article, setArticle] = useState<any>({ 
     title: '', 
@@ -365,3 +366,6 @@ export default function NewArticle() {
     </AdminLayout>
   );
 }
+
+// Protect this page - require authentication
+export default withAuth(NewArticle);
