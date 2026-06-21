@@ -192,52 +192,88 @@ export default function UsersPage() {
             </button>
           </div>
         ) : (
-          <div className="card">
-            <table>
-              <thead>
-                <tr>
-                  <th>المعرف</th>
-                  <th>البريد الإلكتروني</th>
-                  <th>الاسم</th>
-                  <th>الدور</th>
-                  <th>الإجراءات</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map(u => (
-                  <tr key={u.id}>
-                    <td>{u.id}</td>
-                    <td className="font-semibold">{u.email}</td>
-                    <td>{u.name || '—'}</td>
-                    <td>
-                      <span className={`badge ${u.role === 'ADMIN' ? 'badge-primary' : 'badge-success'}`}>
-                        {u.role === 'ADMIN' ? 'مدير' : 'محرر'}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="flex gap-2">
-                        <button 
-                          className="btn-ghost btn-sm"
-                          onClick={() => setEditingUser(u)}
-                          title="تغيير كلمة المرور"
-                        >
-                          🔑 كلمة المرور
-                        </button>
-                        <button 
-                          className="btn-ghost btn-sm"
-                          onClick={() => handleDeleteUser(u.id)}
-                          style={{ color: 'var(--error)' }}
-                          title="حذف المستخدم"
-                        >
-                          🗑️ حذف
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="card users-table-desktop">
+              <table>
+                <thead>
+                  <tr>
+                    <th>المعرف</th>
+                    <th>البريد الإلكتروني</th>
+                    <th>الاسم</th>
+                    <th>الدور</th>
+                    <th>الإجراءات</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {users.map(u => (
+                    <tr key={u.id}>
+                      <td>{u.id}</td>
+                      <td className="font-semibold">{u.email}</td>
+                      <td>{u.name || '—'}</td>
+                      <td>
+                        <span className={`badge ${u.role === 'ADMIN' ? 'badge-primary' : 'badge-success'}`}>
+                          {u.role === 'ADMIN' ? 'مدير' : 'محرر'}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="flex gap-2">
+                          <button 
+                            className="btn-ghost btn-sm"
+                            onClick={() => setEditingUser(u)}
+                            title="تغيير كلمة المرور"
+                          >
+                            🔑 كلمة المرور
+                          </button>
+                          <button 
+                            className="btn-ghost btn-sm"
+                            onClick={() => handleDeleteUser(u.id)}
+                            style={{ color: 'var(--error)' }}
+                            title="حذف المستخدم"
+                          >
+                            🗑️ حذف
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="users-cards-mobile">
+              {users.map(u => (
+                <div key={u.id} className="user-card-mobile">
+                  <div className="user-card-header">
+                    <div>
+                      <div className="user-card-id">#{u.id}</div>
+                      <div className="user-card-email">{u.email}</div>
+                      {u.name && <div className="user-card-name">{u.name}</div>}
+                    </div>
+                    <span className={`badge ${u.role === 'ADMIN' ? 'badge-primary' : 'badge-success'}`}>
+                      {u.role === 'ADMIN' ? 'مدير' : 'محرر'}
+                    </span>
+                  </div>
+                  <div className="user-card-actions">
+                    <button 
+                      className="btn-ghost btn-sm user-action-btn"
+                      onClick={() => setEditingUser(u)}
+                    >
+                      🔑 تغيير كلمة المرور
+                    </button>
+                    <button 
+                      className="btn-ghost btn-sm user-action-btn"
+                      onClick={() => handleDeleteUser(u.id)}
+                      style={{ color: 'var(--error)' }}
+                    >
+                      🗑️ حذف المستخدم
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {/* Change Password Modal */}
