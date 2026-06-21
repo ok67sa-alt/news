@@ -83,7 +83,7 @@ function UsersPage({ user }: { user: any }) {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <AdminLayout user={user}>
         <div className="loading">
           <div className="spinner"></div>
         </div>
@@ -92,7 +92,7 @@ function UsersPage({ user }: { user: any }) {
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout user={user}>
       <div>
         <div className="page-header">
           <div>

@@ -102,7 +102,7 @@ function EditArticle({ user }: { user: any }) {
 
   if (loading) {
     return (
-      <AdminLayout>
+      <AdminLayout user={user}>
         <div className="loading">
           <div className="spinner"></div>
         </div>
@@ -112,7 +112,7 @@ function EditArticle({ user }: { user: any }) {
 
   if (!article) {
     return (
-      <AdminLayout>
+      <AdminLayout user={user}>
         <div className="card text-center" style={{ padding: 'var(--spacing-2xl)' }}>
           <h3 className="text-xl font-bold mb-2">المقال غير موجود</h3>
           <p className="muted mb-4">لم يتم العثور على المقال المطلوب</p>
@@ -133,7 +133,7 @@ function EditArticle({ user }: { user: any }) {
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout user={user}>
       <div className="article-editor-page">
         <div className="editor-header">
           <h1>تحرير المقال</h1>

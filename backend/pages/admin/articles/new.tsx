@@ -178,7 +178,7 @@ function NewArticle({ user }: { user: any }) {
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout user={user}>
       <div className="article-editor-page">
         <div className="editor-header">
           <h1>إنشاء مقال جديد</h1>

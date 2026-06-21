@@ -48,7 +48,7 @@ function AdminIndex({ user: authUser }: { user: any }) {
   }
 
   return (
-    <AdminLayout user={user}>
+    <AdminLayout user={authUser}>
       {/* Welcome Section */}
       <div className="card mb-6">
         <div className="flex items-center justify-between">
