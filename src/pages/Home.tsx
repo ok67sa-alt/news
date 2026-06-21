@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, Clock, Eye, ChevronRight, TrendingUp } from 'lucide-react';
 // Front-end now reads articles from backend via `fetchAPI`
 import ArticleCard from '../components/ArticleCard';
+import VideoSection from '../components/VideoSection';
 import SeoTags from '../components/SeoTags';
 import { getImageUrl } from '../utils/imageResolver';
 import { fetchAPI } from '../utils/api';
@@ -30,11 +31,15 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  // 1. Identify the Main Hero Story (Highest views among featured articles)
-  const featuredArticles = articles.filter((a) => a.featured);
+  // 1. Separate videos from regular articles
+  const videoArticles = articles.filter((a) => a.videoUrl || a.videoFile);
+  const regularArticles = articles.filter((a) => !a.videoUrl && !a.videoFile);
+
+  // 2. Identify the Main Hero Story (Highest views among featured regular articles)
+  const featuredArticles = regularArticles.filter((a) => a.featured);
   const heroArticle = [...featuredArticles].sort((a, b) => b.views - a.views)[0];
 
-  // 2. Identify Top Stories (Next 6 featured articles, sorted by views descending)
+  // 3. Identify Top Stories (Next 6 featured articles, sorted by views descending)
   const topStories = heroArticle
     ? [...featuredArticles]
         .filter((a) => a.id !== heroArticle.id)
@@ -42,14 +47,14 @@ export default function Home() {
         .slice(0, 6)
     : [];
 
-  // 3. Trending News (Top 10 most viewed overall)
-  const trendingArticles = [...articles]
+  // 4. Trending News (Top 10 most viewed regular articles)
+  const trendingArticles = [...regularArticles]
     .sort((a, b) => b.views - a.views)
     .slice(0, 10);
 
-  // 4. Retrieve latest 4 articles for specific categories
+  // 5. Retrieve latest 4 articles for specific categories (excluding videos)
   const getCategoryArticles = (catName: string) => {
-    return [...articles]
+    return [...regularArticles]
       .filter((a) => {
         const categoryName = typeof a.category === 'object' && a.category !== null ? a.category.name : a.category;
         return categoryName?.toLowerCase() === catName.toLowerCase();
@@ -64,8 +69,8 @@ export default function Home() {
   const sportsArticles = getCategoryArticles('Sports');
   const cultureArticles = getCategoryArticles('Culture');
 
-  // 5. Latest News (All articles sorted by date descending)
-  const latestArticles = [...articles]
+  // 5. Latest News (All regular articles sorted by date descending)
+  const latestArticles = [...regularArticles]
     .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime());
 
   const displayedLatest = latestArticles.slice(0, visibleLatestCount);
@@ -234,6 +239,9 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* ================= VIDEO SECTION ================= */}
+      {videoArticles.length > 0 && <VideoSection videos={videoArticles} />}
 
       {/* ================= MULTI-COLUMN CONTENT FEED ================= */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-10">
