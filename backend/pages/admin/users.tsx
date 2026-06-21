@@ -8,6 +8,9 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newUser, setNewUser] = useState({ email: '', name: '', password: '', role: 'EDITOR' });
+  const [editingUser, setEditingUser] = useState<any>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [deletingUserId, setDeletingUserId] = useState<number | null>(null);
 
   useEffect(() => {
     loadUsers();
@@ -38,6 +41,42 @@ export default function UsersPage() {
       alert('تم إضافة المستخدم بنجاح');
     } else {
       alert('فشل إضافة المستخدم');
+    }
+  };
+
+  const handleChangePassword = async (e: any) => {
+    e.preventDefault();
+    if (!editingUser || !newPassword) return alert('كلمة المرور مطلوبة');
+    
+    const res = await fetch(`/api/users/${editingUser.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: newPassword })
+    });
+    
+    if (res.ok) {
+      setEditingUser(null);
+      setNewPassword('');
+      alert('تم تغيير كلمة المرور بنجاح');
+    } else {
+      alert('فشل تغيير كلمة المرور');
+    }
+  };
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء.')) {
+      return;
+    }
+    
+    const res = await fetch(`/api/users/${userId}`, {
+      method: 'DELETE'
+    });
+    
+    if (res.ok) {
+      loadUsers();
+      alert('تم حذف المستخدم بنجاح');
+    } else {
+      alert('فشل حذف المستخدم');
     }
   };
 
@@ -161,6 +200,7 @@ export default function UsersPage() {
                   <th>البريد الإلكتروني</th>
                   <th>الاسم</th>
                   <th>الدور</th>
+                  <th>الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -174,10 +214,74 @@ export default function UsersPage() {
                         {u.role === 'ADMIN' ? 'مدير' : 'محرر'}
                       </span>
                     </td>
+                    <td>
+                      <div className="flex gap-2">
+                        <button 
+                          className="btn-ghost btn-sm"
+                          onClick={() => setEditingUser(u)}
+                          title="تغيير كلمة المرور"
+                        >
+                          🔑 كلمة المرور
+                        </button>
+                        <button 
+                          className="btn-ghost btn-sm"
+                          onClick={() => handleDeleteUser(u.id)}
+                          style={{ color: 'var(--error)' }}
+                          title="حذف المستخدم"
+                        >
+                          🗑️ حذف
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {/* Change Password Modal */}
+        {editingUser && (
+          <div className="modal-overlay" onClick={() => setEditingUser(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>تغيير كلمة المرور</h3>
+                <button 
+                  className="modal-close" 
+                  onClick={() => setEditingUser(null)}
+                >
+                  ×
+                </button>
+              </div>
+              <form onSubmit={handleChangePassword}>
+                <div className="modal-body">
+                  <p className="muted mb-4">
+                    تغيير كلمة المرور للمستخدم: <strong>{editingUser.email}</strong>
+                  </p>
+                  <div>
+                    <label>كلمة المرور الجديدة</label>
+                    <input 
+                      type="password"
+                      className="form-input"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      minLength={6}
+                    />
+                    <small className="help-text">يجب أن تكون 6 أحرف على الأقل</small>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button type="button" className="btn-ghost" onClick={() => setEditingUser(null)}>
+                    إلغاء
+                  </button>
+                  <button type="submit" className="btn-primary">
+                    حفظ كلمة المرور
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
