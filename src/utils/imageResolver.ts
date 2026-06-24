@@ -107,9 +107,10 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
   if (imagePath.startsWith('http')) return imagePath;
 
   if (imagePath.startsWith('/uploads')) {
-    // Try both direct public path and API route
-    // API route ensures files are served even if public directory has issues
-    return `${API_URL}${imagePath}`;
+    // On Railway, use API route to serve uploads since public directory serving has issues
+    // API route: /api/uploads/[...path].ts ensures files are accessible
+    const filename = imagePath.replace('/uploads/', '');
+    return `${API_URL}/api/uploads/${filename}`;
   }
 
   const filename = imagePath.split('/').pop() || '';
