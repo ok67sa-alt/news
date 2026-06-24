@@ -41,3 +41,23 @@ export function parseCookies(req: any) {
   if (!req.headers || !req.headers.cookie) return {};
   return parse(req.headers.cookie);
 }
+
+export function verifyAuth(req: any) {
+  try {
+    const cookies = parse(req.headers.cookie || '');
+    const token = cookies[TOKEN_NAME];
+    
+    if (!token) {
+      return { valid: false, user: null };
+    }
+    
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      return { valid: false, user: null };
+    }
+    
+    return { valid: true, user: decoded };
+  } catch (error) {
+    return { valid: false, user: null };
+  }
+}

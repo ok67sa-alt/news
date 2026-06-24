@@ -27,9 +27,9 @@ export default function BreakingTicker() {
   const doubledArticles = [...breakingArticles, ...breakingArticles, ...breakingArticles];
 
   return (
-    <div className="w-full bg-brand-red text-white border-b-2 border-brand-red flex items-center h-8 overflow-hidden select-none">
+    <div className="w-full bg-white text-brand-red border-b-2 border-gray-200 flex items-center h-8 overflow-hidden select-none">
       {/* High-visibility blinking badge */}
-      <div className="bg-brand-blue text-white text-[10px] font-ui font-black px-3 py-1.5 uppercase tracking-wider z-10 flex items-center shrink-0 h-full border-r border-brand-red">
+      <div className="bg-brand-red text-white text-[10px] font-ui font-black px-3 py-1.5 uppercase tracking-wider z-10 flex items-center shrink-0 h-full border-r-2 border-gray-200">
         <span className="animate-pulse mr-1">●</span> BREAKING
       </div>
 
@@ -40,9 +40,9 @@ export default function BreakingTicker() {
             <Link
               key={`${article.id}-${idx}`}
               to={`/article/${article.slug}`}
-              className="hover:underline transition-colors flex items-center space-x-1 shrink-0 font-semibold"
+              className="hover:underline transition-colors flex items-center space-x-1 shrink-0 font-semibold text-brand-red hover:text-brand-dark"
             >
-              <span className="text-white font-black">›</span>
+              <span className="font-black">›</span>
               <span className="whitespace-nowrap">{article.title}</span>
             </Link>
           ))}
