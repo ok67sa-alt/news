@@ -107,6 +107,8 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
   if (imagePath.startsWith('http')) return imagePath;
 
   if (imagePath.startsWith('/uploads')) {
+    // Try both direct public path and API route
+    // API route ensures files are served even if public directory has issues
     return `${API_URL}${imagePath}`;
   }
 

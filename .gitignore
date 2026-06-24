@@ -40,7 +40,8 @@ yarn-error.log*
 prisma/dev.db
 
 # Uploads (should be in S3 or external storage)
-backend/public/uploads/
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
 uploads/
 
 # Test coverage

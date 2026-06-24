@@ -23,8 +23,16 @@ async function saveToLocal(file: formidable.File): Promise<string> {
   // IMPORTANT: In production (Railway, Vercel, etc.), uploads to local filesystem
   // are EPHEMERAL and will be lost on redeployment. Use S3 for production!
   
-  const uploadsDir = path.resolve(process.cwd(), 'public', 'uploads');
+  const cwd = process.cwd();
+  const uploadsDir = path.resolve(cwd, 'public', 'uploads');
+  
+  // 🔍 DIAGNOSTIC LOGGING
+  console.log('📁 CWD:', cwd);
+  console.log('📁 Uploads Directory:', uploadsDir);
+  console.log('📁 Directory exists:', fs.existsSync(uploadsDir));
+  
   if (!fs.existsSync(uploadsDir)) {
+    console.log('📁 Creating uploads directory...');
     fs.mkdirSync(uploadsDir, { recursive: true });
   }
 
@@ -35,7 +43,13 @@ async function saveToLocal(file: formidable.File): Promise<string> {
   const uniqueName = `${safeName}-${Date.now()}${ext}`;
   const destPath = path.join(uploadsDir, uniqueName);
 
+  console.log('📁 Saving to:', destPath);
   await fs.promises.copyFile(file.filepath, destPath);
+  
+  // Verify file was saved
+  const fileExists = fs.existsSync(destPath);
+  const fileSize = fileExists ? fs.statSync(destPath).size : 0;
+  console.log('✅ File saved:', fileExists, 'Size:', fileSize, 'bytes');
   
   // Clean up temp file
   try {
@@ -126,7 +140,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.setHeader('Allow', 'POST').status(405).json({ error: 'Method Not Allowed' });
   }
 
-  console.log('Upload request received');
+  // 🔍 DIAGNOSTIC: Check environment
+  const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
+  const hasS3Configured = process.env.S3_BUCKET && process.env.S3_REGION;
+  
+  console.log('📤 Upload request received');
+  console.log('🌍 Environment:', process.env.NODE_ENV);
+  console.log('🚂 Railway Env:', process.env.RAILWAY_ENVIRONMENT);
+  console.log('📦 Storage:', hasS3Configured ? 'S3/R2 (Persistent)' : 'Local (Ephemeral)');
+  console.log('🔒 Production mode:', isProduction);
+  
+  // ⚠️ TEMPORARY: Allow local uploads for testing (REMOVE IN PRODUCTION)
+  // TODO: Configure S3/R2 and re-enable this check
+  /*
+  if (isProduction && !hasS3Configured) {
+    console.error('🔴 CRITICAL: Production upload attempted without S3/R2 configuration!');
+    return res.status(503).json({ 
+      error: 'File uploads are not available. Server storage not configured.',
+      message: 'Contact administrator to configure S3 or Cloudflare R2 storage.',
+      code: 'STORAGE_NOT_CONFIGURED',
+      documentation: 'See RAILWAY_SETUP_GUIDE.md for setup instructions'
+    });
+  }
+  */
   
   const form = formidable({ 
     multiples: false, 
@@ -172,27 +208,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       
       // Check if S3 is configured
       if (process.env.S3_BUCKET && process.env.S3_REGION) {
-        console.log('Uploading to S3...');
+        console.log('☁️  Uploading to S3/R2 (persistent storage)...');
         url = await saveToS3(file);
+        console.log('✅ Upload successful:', url);
       } else {
-        console.log('Uploading to local storage...');
+        console.log('💾 Uploading to local storage (ephemeral - will be lost on redeploy)...');
         url = await saveToLocal(file);
+        console.log('⚠️  File saved locally - will be deleted on Railway restart!');
       }
 
       const fileType = ALLOWED_IMAGE_TYPES.includes(file.mimetype || '') ? 'image' : 'video';
+      
+      console.log('📋 Upload complete:', {
+        type: fileType,
+        url,
+        size: `${(file.size / 1024).toFixed(2)}KB`,
+        filename: file.originalFilename
+      });
       
       return res.status(201).json({ 
         url,
         type: fileType,
         filename: file.originalFilename || 'unknown',
         size: file.size,
-        mimetype: file.mimetype
+        mimetype: file.mimetype,
+        storage: process.env.S3_BUCKET ? 's3' : 'local'
       });
     } catch (uploadErr: any) {
-      console.error('Upload error:', uploadErr);
+      console.error('❌ Upload error:', uploadErr);
       return res.status(500).json({ 
         error: 'Upload failed', 
-        details: uploadErr.message 
+        details: uploadErr.message,
+        stack: process.env.NODE_ENV === 'development' ? uploadErr.stack : undefined
       });
     }
   });
