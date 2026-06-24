@@ -104,21 +104,21 @@ export default function Home() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <SeoTags 
         title="Sudan Times | Independent Sudanese News & Analysis" 
         description="Breaking news, in-depth reports, political analysis, economic briefs, humanitarian updates, culture, and sports coverage from Sudan."
       />
 
       {/* ================= HERO SECTION ================= */}
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-8 border-b border-brand-border">
+      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10 border-b-4 border-brand-dark">
         {/* Left & Center: Main Hero Story */}
-        <div className="lg:col-span-2 space-y-4 lg:pr-6 lg:border-r border-brand-border/60">
-          <span className="text-xs font-ui font-black uppercase text-brand-blue tracking-widest bg-brand-blue/5 px-2.5 py-1 rounded inline-block">
-            Featured Coverage
+        <div className="lg:col-span-2 space-y-4 lg:pr-8">
+          <span className="text-xs font-ui font-black uppercase text-white bg-brand-blue px-3 py-1.5 tracking-widest inline-block">
+            FEATURED COVERAGE
           </span>
-          <Link to={`/article/${heroArticle.slug}`} className="group block space-y-4">
-            <div className="w-full aspect-[16/9] overflow-hidden bg-black border border-brand-border relative">
+          <Link to={`/article/${heroArticle.slug}`} className="group block space-y-5">
+            <div className="w-full aspect-[16/9] overflow-hidden bg-black relative shadow-lg">
               {!heroArticle.image && heroArticle.videoFile && !heroArticle.videoUrl ? (
                 // Show actual video player for uploaded videos
                 <video 
@@ -134,13 +134,13 @@ export default function Home() {
                 <img
                   src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)}
                   alt={heroArticle.title}
-                  className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-700 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               )}
               {/* Video indicator overlay */}
               {!heroArticle.image && (heroArticle.videoUrl || heroArticle.videoFile) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
-                  <div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-lg">
+                  <div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl">
                     <svg className="w-10 h-10 text-brand-red ml-1" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
@@ -148,15 +148,15 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <h2 className="font-headline font-black text-3xl sm:text-4xl md:text-5xl text-brand-dark group-hover:text-brand-red transition-colors leading-tight tracking-tight">
+            <h2 className="font-headline font-black text-3xl sm:text-4xl md:text-5xl text-brand-dark group-hover:text-brand-red transition-colors leading-[1.1] tracking-tight">
               {heroArticle.title}
             </h2>
           </Link>
-          <p className="text-sm sm:text-base text-brand-muted font-body leading-relaxed">
+          <p className="text-base text-gray-600 font-body leading-relaxed">
             {heroArticle.excerpt}
           </p>
-          <div className="flex items-center justify-between text-xs font-ui text-brand-muted pt-2 flex-wrap gap-2">
-            <div className="flex items-center space-x-3">
+          <div className="flex items-center justify-between text-xs font-ui text-gray-500 pt-2 flex-wrap gap-3">
+            <div className="flex items-center space-x-3 flex-wrap gap-y-1">
               <span className="font-bold text-brand-dark">By {typeof heroArticle.author === 'object' && heroArticle.author !== null ? heroArticle.author.name : (heroArticle.author || 'Sudan News')}</span>
               <span>•</span>
               <span className="flex items-center space-x-1">
@@ -171,41 +171,41 @@ export default function Home() {
             </div>
             <Link 
               to={`/article/${heroArticle.slug}`}
-              className="inline-flex items-center px-4 py-2 bg-brand-blue hover:bg-brand-red text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
+              className="inline-flex items-center px-5 py-2.5 bg-brand-red hover:bg-brand-dark text-white font-ui font-bold text-xs uppercase tracking-wider transition-all duration-200 shadow-sm hover:shadow-md"
             >
-              Read Full Article <ChevronRight className="ml-1 h-3.5 w-3.5" />
+              Read Full Story <ChevronRight className="ml-1 h-4 w-4" />
             </Link>
           </div>
         </div>
 
         {/* Right side: Editor's Choices (Vertical text widgets) */}
-        <div className="space-y-6">
-          <h3 className="font-headline font-bold text-xl uppercase border-b-2 border-brand-dark pb-2">
+        <div className="space-y-6 lg:pl-8 lg:border-l-4 border-brand-dark">
+          <h3 className="font-headline font-bold text-2xl uppercase text-brand-dark">
             Editor's Picks
           </h3>
-          <div className="divide-y divide-brand-border/60">
+          <div className="divide-y divide-gray-200">
               {articles
                 .filter((a) => a.featured && a.id !== heroArticle.id)
                 .slice(0, 4)
                 .map((article) => (
                 <div key={article.id} className="py-4 first:pt-0 last:pb-0">
-                  <span className="text-[10px] font-ui font-black uppercase text-brand-red tracking-widest block mb-1">
+                  <span className="text-[10px] font-ui font-black uppercase text-white bg-brand-red px-2 py-0.5 tracking-widest">
                     {typeof article.category === 'object' && article.category !== null ? article.category.name : (article.category || '')}
                   </span>
                   <Link 
                     to={`/article/${article.slug}`} 
-                    className="group"
+                    className="group block mt-2"
                   >
-                    <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-snug">
+                    <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight">
                       {article.title}
                     </h4>
                   </Link>
-                  <div className="flex items-center space-x-3 text-[10px] font-ui text-brand-muted mt-2">
+                  <div className="flex items-center space-x-3 text-[11px] font-ui text-gray-500 mt-2">
                     <span>By {typeof article.author === 'object' && article.author !== null ? article.author.name : (article.author || 'Sudan News')}</span>
                     <span>•</span>
                     <span className="flex items-center space-x-0.5">
                       <Eye className="h-3 w-3" />
-                      <span>{article.views.toLocaleString()} views</span>
+                      <span>{article.views.toLocaleString()}</span>
                     </span>
                   </div>
                 </div>
@@ -213,9 +213,9 @@ export default function Home() {
           </div>
 
           {/* Quick Ad/Highlight slot */}
-          <div className="bg-brand-bgMuted border border-brand-border p-4 text-center mt-6">
-            <h5 className="font-headline font-bold text-sm tracking-tight text-brand-red">SUPPORT INDEPENDENT JOURNALISM</h5>
-            <p className="text-[11px] font-ui text-brand-muted mt-1 leading-normal">
+          <div className="bg-brand-red text-white p-5 text-center mt-8">
+            <h5 className="font-headline font-bold text-base tracking-tight uppercase">Support Independent Journalism</h5>
+            <p className="text-xs mt-2 leading-relaxed opacity-90">
               Sudan Times delivers impartial news from the ground. Support our editorial team by sharing our reporting.
             </p>
           </div>
@@ -223,14 +223,14 @@ export default function Home() {
       </section>
 
       {/* ================= TOP STORIES SECTION ================= */}
-      <section className="py-10 border-b border-brand-border">
-        <div className="flex justify-between items-center mb-6">
-          <h3 className="font-headline font-black text-2xl tracking-tight text-brand-dark uppercase">
+      <section className="py-12">
+        <div className="flex items-end border-b-4 border-brand-dark pb-3 mb-8">
+          <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
             Top Stories
           </h3>
-          <div className="h-0.5 bg-brand-border flex-grow mx-4 hidden sm:block"></div>
-          <span className="text-xs font-ui font-bold text-brand-muted uppercase tracking-wider">
-            Prioritized by reader interest
+          <div className="h-1 bg-gray-200 flex-grow mx-4 mb-2 hidden sm:block"></div>
+          <span className="text-[10px] font-ui font-bold text-gray-500 uppercase tracking-wider mb-1">
+            Most Viewed
           </span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -244,140 +244,118 @@ export default function Home() {
       {videoArticles.length > 0 && <VideoSection videos={videoArticles} />}
 
       {/* ================= MULTI-COLUMN CONTENT FEED ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 py-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 py-12 border-t-4 border-brand-dark">
         
         {/* Left Column (2/3 Width): Category Blocks and Latest Feed */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-14">
           
           {/* 1. Politics Block */}
           <div>
-            <div className="flex justify-between items-end border-b-2 border-brand-dark pb-2 mb-4">
-              <h3 className="font-headline font-bold text-xl uppercase tracking-tight text-brand-dark">
+            <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                 Politics
               </h3>
-              <Link to="/category/politics" className="text-xs font-ui font-bold text-brand-red hover:underline uppercase flex items-center">
-                All Politics <ChevronRight className="h-3 w-3 ml-0.5" />
+              <Link to="/category/politics" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                All Politics <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {politicsArticles.slice(0, 2).map(art => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {politicsArticles.slice(0, 4).map(art => (
                 <ArticleCard key={art.id} article={art} layout="vertical" />
               ))}
-              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-brand-border/60 pt-4">
-                {politicsArticles.slice(2, 4).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="minimal" />
-                ))}
-              </div>
             </div>
           </div>
 
           {/* 2. Economy Block */}
           <div>
-            <div className="flex justify-between items-end border-b-2 border-brand-dark pb-2 mb-4">
-              <h3 className="font-headline font-bold text-xl uppercase tracking-tight text-brand-dark">
+            <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                 Economy
               </h3>
-              <Link to="/category/economy" className="text-xs font-ui font-bold text-brand-red hover:underline uppercase flex items-center">
-                All Economy <ChevronRight className="h-3 w-3 ml-0.5" />
+              <Link to="/category/economy" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                All Economy <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {economyArticles.slice(0, 2).map(art => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {economyArticles.slice(0, 4).map(art => (
                 <ArticleCard key={art.id} article={art} layout="vertical" />
               ))}
-              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-brand-border/60 pt-4">
-                {economyArticles.slice(2, 4).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="minimal" />
-                ))}
-              </div>
             </div>
           </div>
 
           {/* 3. Technology Block */}
           <div>
-            <div className="flex justify-between items-end border-b-2 border-brand-dark pb-2 mb-4">
-              <h3 className="font-headline font-bold text-xl uppercase tracking-tight text-brand-dark">
+            <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                 Technology
               </h3>
-              <Link to="/category/technology" className="text-xs font-ui font-bold text-brand-red hover:underline uppercase flex items-center">
-                All Tech <ChevronRight className="h-3 w-3 ml-0.5" />
+              <Link to="/category/technology" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                All Tech <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {techArticles.slice(0, 2).map(art => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {techArticles.slice(0, 4).map(art => (
                 <ArticleCard key={art.id} article={art} layout="vertical" />
               ))}
-              <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-brand-border/60 pt-4">
-                {techArticles.slice(2, 4).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="minimal" />
-                ))}
-              </div>
             </div>
           </div>
 
           {/* 4. Sports & Culture Split */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {/* Sports Column */}
             <div>
-              <div className="flex justify-between items-end border-b-2 border-brand-dark pb-2 mb-4">
-                <h3 className="font-headline font-bold text-lg uppercase tracking-tight text-brand-dark">
+              <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+                <h3 className="font-headline font-black text-xl uppercase tracking-tight text-brand-dark">
                   Sports
                 </h3>
-                <Link to="/category/sports" className="text-xs font-ui font-bold text-brand-red hover:underline uppercase">
-                  More
+                <Link to="/category/sports" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase transition-colors">
+                  More <ChevronRight className="h-3 w-3 ml-0.5 inline" />
                 </Link>
               </div>
-              <div className="space-y-4">
-                {sportsArticles.slice(0, 1).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="vertical" />
+              <div className="grid grid-cols-1 gap-6">
+                {sportsArticles.slice(0, 4).map(art => (
+                  <ArticleCard key={art.id} article={art} layout="horizontal" />
                 ))}
-                <div className="divide-y divide-brand-border/60">
-                  {sportsArticles.slice(1, 4).map(art => (
-                    <ArticleCard key={art.id} article={art} layout="minimal" />
-                  ))}
-                </div>
               </div>
             </div>
 
             {/* Culture Column */}
             <div>
-              <div className="flex justify-between items-end border-b-2 border-brand-dark pb-2 mb-4">
-                <h3 className="font-headline font-bold text-lg uppercase tracking-tight text-brand-dark">
+              <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+                <h3 className="font-headline font-black text-xl uppercase tracking-tight text-brand-dark">
                   Culture
                 </h3>
-                <Link to="/category/culture" className="text-xs font-ui font-bold text-brand-red hover:underline uppercase">
-                  More
+                <Link to="/category/culture" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase transition-colors">
+                  More <ChevronRight className="h-3 w-3 ml-0.5 inline" />
                 </Link>
               </div>
-              <div className="space-y-4">
-                {cultureArticles.slice(0, 1).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="vertical" />
+              <div className="grid grid-cols-1 gap-6">
+                {cultureArticles.slice(0, 4).map(art => (
+                  <ArticleCard key={art.id} article={art} layout="horizontal" />
                 ))}
-                <div className="divide-y divide-brand-border/60">
-                  {cultureArticles.slice(1, 4).map(art => (
-                    <ArticleCard key={art.id} article={art} layout="minimal" />
-                  ))}
-                </div>
               </div>
             </div>
           </div>
 
           {/* 5. Latest News Feed */}
-          <div className="pt-8 border-t border-brand-border">
-            <h3 className="font-headline font-black text-2xl uppercase border-b-2 border-brand-dark pb-2 mb-6">
-              Latest Reporting
-            </h3>
-            <div className="space-y-2">
+          <div className="pt-4">
+            <div className="flex items-end border-b-4 border-brand-dark pb-3 mb-8">
+              <h3 className="font-headline font-black text-3xl uppercase text-brand-dark">
+                Latest Reporting
+              </h3>
+              <div className="h-1 bg-gray-200 flex-grow ml-4 mb-2 hidden sm:block"></div>
+            </div>
+            <div className="grid grid-cols-1 gap-0">
               {displayedLatest.map((art) => (
                 <ArticleCard key={art.id} article={art} layout="horizontal" />
               ))}
             </div>
 
             {visibleLatestCount < latestArticles.length && (
-              <div className="text-center pt-8">
+              <div className="text-center pt-10">
                 <button
                   onClick={loadMoreLatest}
-                  className="px-6 py-3 border border-brand-dark hover:bg-brand-dark hover:text-white font-ui font-bold text-xs uppercase tracking-wider transition-colors duration-200"
+                  className="px-8 py-3 border-2 border-brand-dark hover:bg-brand-dark hover:text-white font-ui font-bold text-xs uppercase tracking-wider transition-all duration-200"
                 >
                   Load More Articles
                 </button>
@@ -390,18 +368,18 @@ export default function Home() {
         {/* Right Column (1/3 Width): Sticky Trending Sidebar */}
         <div className="space-y-8">
           <div className="sticky top-6">
-            <div className="flex items-center space-x-2 border-b-2 border-brand-dark pb-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-brand-red" />
-              <h3 className="font-headline font-bold text-xl uppercase tracking-tight text-brand-dark">
-                Trending Stories
+            <div className="flex items-center space-x-2 border-b-4 border-brand-dark pb-3 mb-6">
+              <TrendingUp className="h-6 w-6 text-brand-red" />
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
+                Trending
               </h3>
             </div>
             
-            <p className="text-[11px] font-ui text-brand-muted mb-4 leading-normal">
+            <p className="text-xs font-ui text-gray-500 mb-6 leading-relaxed">
               Most read reports in Sudan over the past 24 hours.
             </p>
 
-            <div className="border border-brand-border/80 p-4 bg-white divide-y divide-brand-border/60">
+            <div className="border border-gray-200 p-5 bg-white divide-y divide-gray-200 shadow-sm">
               {trendingArticles.map((article, idx) => (
                 <ArticleCard 
                   key={article.id} 
@@ -411,12 +389,12 @@ export default function Home() {
               ))}
             </div>
 
-            <div className="mt-8 bg-brand-blue text-white p-6 text-center space-y-4">
-              <h4 className="font-headline text-lg font-bold uppercase tracking-tight">SUDAN TIMES APP</h4>
+            <div className="mt-8 bg-brand-blue text-white p-6 text-center space-y-4 shadow-md">
+              <h4 className="font-headline text-xl font-bold uppercase tracking-tight">Sudan Times App</h4>
               <p className="text-xs leading-relaxed opacity-90 font-ui">
                 Read breaking reports on-the-go. Secure connection, custom bookmarks, and offline database reading.
               </p>
-              <button className="w-full py-2.5 bg-white text-brand-dark font-ui font-black text-[11px] uppercase tracking-wider hover:bg-gray-100 transition-colors">
+              <button className="w-full py-3 bg-white text-brand-dark font-ui font-black text-xs uppercase tracking-wider hover:bg-gray-100 transition-colors shadow-sm">
                 Coming Soon to App Stores
               </button>
             </div>

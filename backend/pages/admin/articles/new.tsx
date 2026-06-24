@@ -174,7 +174,7 @@ function NewArticle({ user }: { user: any }) {
   function estimateReadTime(text: string) {
     const words = text ? text.trim().split(/\s+/).length : 0;
     const minutes = Math.max(1, Math.round(words / 200));
-    return `${minutes} دقيقة`;
+    return `${minutes} min read`;
   }
 
   return (
