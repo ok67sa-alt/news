@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import ArticleDetail from './pages/ArticleDetail';
 import CategoryPage from './pages/CategoryPage';
 import SearchPage from './pages/SearchPage';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 // Helper to scroll to the top of the page on route changes
 function ScrollToTop() {
@@ -31,6 +33,8 @@ export default function App() {
             <Route path="/article/:slug" element={<ArticleDetail />} />
             <Route path="/category/:name" element={<CategoryPage />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
           </Routes>
         </main>
         
