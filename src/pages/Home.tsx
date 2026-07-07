@@ -5,8 +5,9 @@ import { Calendar, Clock, Eye, ChevronRight, TrendingUp } from 'lucide-react';
 import ArticleCard from '../components/ArticleCard';
 import VideoSection from '../components/VideoSection';
 import SeoTags from '../components/SeoTags';
-import { getImageUrl } from '../utils/imageResolver';
+import { getImageUrl, hasMediaImage } from '../utils/imageResolver';
 import { fetchAPI } from '../utils/api';
+import { getAuthorName, getCategoryName } from '../utils/articleHelpers';
 import { StrapiArticle } from '../types/api';
 
 export default function Home() {
@@ -39,13 +40,11 @@ export default function Home() {
   const featuredArticles = regularArticles.filter((a) => a.featured);
   const heroArticle = [...featuredArticles].sort((a, b) => b.views - a.views)[0];
 
-  // 3. Identify Top Stories (Next 6 featured articles, sorted by views descending)
-  const topStories = heroArticle
-    ? [...featuredArticles]
-        .filter((a) => a.id !== heroArticle.id)
-        .sort((a, b) => b.views - a.views)
-        .slice(0, 6)
-    : [];
+  // 3. Top Stories (Most read articles excluding the hero, sorted by views descending)
+  const topStories = [...regularArticles]
+    .filter((a) => a.id !== heroArticle?.id) // Exclude hero article
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 6);
 
   // 4. Trending News (Top 10 most viewed regular articles)
   const trendingArticles = [...regularArticles]
@@ -56,7 +55,7 @@ export default function Home() {
   const getCategoryArticles = (catName: string) => {
     return [...regularArticles]
       .filter((a) => {
-        const categoryName = typeof a.category === 'object' && a.category !== null ? a.category.name : a.category;
+        const categoryName = getCategoryName(a);
         return categoryName?.toLowerCase() === catName.toLowerCase();
       })
       .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime())
@@ -119,12 +118,11 @@ export default function Home() {
           </span>
           <Link to={`/article/${heroArticle.slug}`} className="group block space-y-5">
             <div className="w-full aspect-[16/9] overflow-hidden bg-black relative shadow-lg">
-              {!heroArticle.image && heroArticle.videoFile && !heroArticle.videoUrl ? (
+              {!hasMediaImage(heroArticle.image) && heroArticle.videoFile && !heroArticle.videoUrl ? (
                 // Show actual video player for uploaded videos
                 <video 
                   className="w-full h-full object-cover"
                   preload="metadata"
-                  poster=""
                 >
                   <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/mp4" />
                   <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/webm" />
@@ -138,7 +136,7 @@ export default function Home() {
                 />
               )}
               {/* Video indicator overlay */}
-              {!heroArticle.image && (heroArticle.videoUrl || heroArticle.videoFile) && (
+              {!hasMediaImage(heroArticle.image) && (heroArticle.videoUrl || heroArticle.videoFile) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/40 transition-colors">
                   <div className="w-20 h-20 rounded-full bg-white/90 flex items-center justify-center shadow-xl">
                     <svg className="w-10 h-10 text-brand-red ml-1" fill="currentColor" viewBox="0 0 24 24">
@@ -157,7 +155,7 @@ export default function Home() {
           </p>
           <div className="flex items-center justify-between text-xs font-ui text-gray-500 pt-2 flex-wrap gap-3">
             <div className="flex items-center space-x-3 flex-wrap gap-y-1">
-              <span className="font-bold text-brand-dark">By {typeof heroArticle.author === 'object' && heroArticle.author !== null ? heroArticle.author.name : (heroArticle.author || 'Sudan News')}</span>
+              <span className="font-bold text-brand-dark">By {getAuthorName(heroArticle)}</span>
               <span>•</span>
               <span className="flex items-center space-x-1">
                 <Calendar className="h-3.5 w-3.5" />
@@ -190,7 +188,7 @@ export default function Home() {
                 .map((article) => (
                 <div key={article.id} className="py-4 first:pt-0 last:pb-0">
                   <span className="text-[10px] font-ui font-black uppercase text-white bg-brand-red px-2 py-0.5 tracking-widest">
-                    {typeof article.category === 'object' && article.category !== null ? article.category.name : (article.category || '')}
+                    {getCategoryName(article)}
                   </span>
                   <Link 
                     to={`/article/${article.slug}`} 
@@ -201,7 +199,7 @@ export default function Home() {
                     </h4>
                   </Link>
                   <div className="flex items-center space-x-3 text-[11px] font-ui text-gray-500 mt-2">
-                    <span>By {typeof article.author === 'object' && article.author !== null ? article.author.name : (article.author || 'Sudan News')}</span>
+                    <span>By {getAuthorName(article)}</span>
                     <span>•</span>
                     <span className="flex items-center space-x-0.5">
                       <Eye className="h-3 w-3" />

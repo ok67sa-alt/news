@@ -25,9 +25,14 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      // Proxy API calls to backend during development
+      // Proxy API calls to backend during development (when not using Strapi directly)
       '/api': {
         target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+      // Proxy Strapi media uploads during development
+      '/uploads': {
+        target: 'http://localhost:1337',
         changeOrigin: true,
       },
     },

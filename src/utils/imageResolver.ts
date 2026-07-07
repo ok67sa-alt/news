@@ -59,6 +59,24 @@ const imageMap: Record<string, string> = {
   'afu.jpeg': '/assets/afu-Bf4SIFvB.jpeg',
 };
 
+/** Extract a media URL from Strapi v5 arrays, objects, or plain strings. */
+function extractMediaPath(imageVar: any): string {
+  if (!imageVar) return '';
+  if (typeof imageVar === 'string') return imageVar;
+  if (Array.isArray(imageVar)) return imageVar[0]?.url || '';
+  if (typeof imageVar === 'object') {
+    if (imageVar.url) return imageVar.url;
+    // Handle oddly normalized array-like objects
+    if (imageVar[0]?.url) return imageVar[0].url;
+  }
+  return '';
+}
+
+/** Returns true when the article has a usable image (handles Strapi v5 arrays). */
+export function hasMediaImage(imageVar: any): boolean {
+  return Boolean(extractMediaPath(imageVar));
+}
+
 /**
  * Resolves an image path string to either a remote URL or a bundled local image asset.
  * If no image is provided but a video URL exists, tries to get video thumbnail.
@@ -67,6 +85,7 @@ const imageMap: Record<string, string> = {
  */
 export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?: string | null): string {
   const API_URL = window.location.origin;
+  const STRAPI_URL = import.meta.env.VITE_STRAPI_API_URL || '';
 
   // If no image but video file exists, return the video file path (will be handled by component)
   if (!imageVar && videoFile) {
@@ -84,12 +103,7 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
     return `${API_URL}/placeholder.svg`;
   }
 
-  let imagePath = '';
-  if (typeof imageVar === 'string') {
-    imagePath = imageVar;
-  } else if (imageVar && typeof imageVar === 'object') {
-    imagePath = imageVar.url || '';
-  }
+  const imagePath = extractMediaPath(imageVar);
 
   if (!imagePath) {
     // Try video file as fallback
@@ -107,9 +121,8 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
   if (imagePath.startsWith('http')) return imagePath;
 
   if (imagePath.startsWith('/uploads')) {
-    // Return the /uploads/ path directly
-    // Next.js will rewrite it to /api/uploads/ automatically via next.config.mjs
-    return `${API_URL}${imagePath}`;
+    const mediaBase = STRAPI_URL || API_URL;
+    return `${mediaBase}${imagePath}`;
   }
 
   const filename = imagePath.split('/').pop() || '';

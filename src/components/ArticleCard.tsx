@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye } from 'lucide-react';
-import { getImageUrl, isVideoFile } from '../utils/imageResolver';
+import { getImageUrl, isVideoFile, hasMediaImage } from '../utils/imageResolver';
+import { getAuthorName, getCategoryName } from '../utils/articleHelpers';
 
 import { Article } from '../types/api';
 
@@ -17,13 +18,8 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
     year: 'numeric',
   });
 
-  const categoryName = typeof article.category === 'object' && article.category !== null
-    ? article.category.name
-    : (article.category || '');
-
-  const authorName = typeof article.author === 'object' && article.author !== null
-    ? article.author.name
-    : (article.author || 'Sudan News');
+  const categoryName = getCategoryName(article);
+  const authorName = getAuthorName(article);
 
   // Common metadata row
   const metaRow = (
@@ -111,7 +107,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
 
   // Horizontal row layout
   if (layout === 'horizontal') {
-    const hasVideoOnly = !article.image && (article.videoUrl || article.videoFile);
+    const hasVideoOnly = !hasMediaImage(article.image) && (article.videoUrl || article.videoFile);
     const isUploadedVideo = article.videoFile && !article.videoUrl;
     
     return (
@@ -132,7 +128,6 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
             <video 
               className="w-full h-full object-cover"
               preload="metadata"
-              poster=""
             >
               <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/mp4" />
               <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/webm" />
@@ -184,7 +179,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
   }
 
   // Default Vertical card layout
-  const hasVideoOnly = !article.image && (article.videoUrl || article.videoFile);
+  const hasVideoOnly = !hasMediaImage(article.image) && (article.videoUrl || article.videoFile);
   const isUploadedVideo = article.videoFile && !article.videoUrl;
   
   return (
@@ -205,7 +200,6 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
           <video 
             className="w-full h-full object-cover"
             preload="metadata"
-            poster=""
           >
             <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/mp4" />
             <source src={getImageUrl(article.image, article.videoUrl, article.videoFile)} type="video/webm" />

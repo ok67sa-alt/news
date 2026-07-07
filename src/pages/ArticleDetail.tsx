@@ -8,6 +8,7 @@ import SeoTags from '../components/SeoTags';
 import { getImageUrl } from '../utils/imageResolver';
 import { parseEditorJsContent, isEditorJsContent } from '../utils/editorJsParser';
 import { fetchAPI, incrementArticleViews } from '../utils/api';
+import { getAuthorName, getCategoryName, getCategorySlug, getAuthorRole } from '../utils/articleHelpers';
 import { StrapiArticle } from '../types/api';
 
 export default function ArticleDetail() {
@@ -81,11 +82,7 @@ export default function ArticleDetail() {
 
   // Get related articles (same category, excluding this one)
   const relatedArticles = articles
-    .filter((a) => {
-      const aCat = typeof a.category === 'object' && a.category !== null ? a.category.name : a.category;
-      const currentCat = typeof article.category === 'object' && article.category !== null ? article.category.name : article.category;
-      return aCat === currentCat && a.id !== article.id;
-    })
+    .filter((a) => getCategoryName(a) === getCategoryName(article) && a.id !== article.id)
     .slice(0, 3);
 
   // Get trending articles (most read, excluding this one)
@@ -94,21 +91,10 @@ export default function ArticleDetail() {
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
 
-  const categoryName = typeof article.category === 'object' && article.category !== null
-    ? article.category.name
-    : (article.category || '');
-
-  const categorySlug = typeof article.category === 'object' && article.category !== null
-    ? article.category.slug
-    : (article.category || '').toLowerCase().split(' ')[0];
-
-  const authorName = typeof article.author === 'object' && article.author !== null
-    ? article.author.name
-    : (article.author || '');
-
-  const authorRole = typeof article.author === 'object' && article.author !== null && article.author.role
-    ? article.author.role
-    : 'Special Correspondent, Khartoum';
+  const categoryName = getCategoryName(article);
+  const categorySlug = getCategorySlug(article);
+  const authorName = getAuthorName(article);
+  const authorRole = getAuthorRole(article);
 
   const formattedDate = new Date(article.publishedAt).toLocaleDateString('en-US', {
     weekday: 'long',
@@ -329,7 +315,7 @@ export default function ArticleDetail() {
               {trendingArticles.map((art) => (
                 <div key={art.id} className="py-3.5 first:pt-0 last:pb-0">
                   <span className="text-[9px] font-ui font-black uppercase text-brand-red tracking-widest block mb-0.5">
-                    {art.category}
+                    {getCategoryName(art)}
                   </span>
                   <Link 
                     to={`/article/${art.slug}`} 
@@ -340,7 +326,7 @@ export default function ArticleDetail() {
                     </h4>
                   </Link>
                   <p className="text-[10px] text-brand-muted mt-1">
-                    By {art.author} • {art.views.toLocaleString()} views
+                    By {getAuthorName(art)} • {art.views.toLocaleString()} views
                   </p>
                 </div>
               ))}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Twitter, Facebook, Linkedin, Rss } from 'lucide-react';
+import { ArrowRight, Facebook } from 'lucide-react';
 import { fetchAPI } from '../utils/api';
 import { StrapiCategory } from '../types/api';
 
@@ -64,10 +64,7 @@ export default function Footer() {
               Independent news covering politics, economy, humanitarian affairs, culture, and development in Sudan. Based in Khartoum, reporting to the world.
             </p>
             <div className="flex space-x-4 pt-3">
-              <a href="#" className="text-gray-200 hover:text-brand-red transition-colors" aria-label="Twitter"><Twitter className="h-4 w-4" /></a>
-              <a href="#" className="text-gray-200 hover:text-brand-red transition-colors" aria-label="Facebook"><Facebook className="h-4 w-4" /></a>
-              <a href="#" className="text-gray-200 hover:text-brand-red transition-colors" aria-label="LinkedIn"><Linkedin className="h-4 w-4" /></a>
-              <a href="#" className="text-gray-200 hover:text-brand-red transition-colors" aria-label="RSS"><Rss className="h-4 w-4" /></a>
+              <a href="https://www.facebook.com/share/18bTgrtnqB/" target="_blank" rel="noopener noreferrer" className="text-gray-200 hover:text-brand-red transition-colors" aria-label="Facebook"><Facebook className="h-4 w-4" /></a>
             </div>
           </div>
 
@@ -161,12 +158,12 @@ export default function Footer() {
           <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-4 sm:mb-0">
             <span>© {new Date().getFullYear()} Sudan News. All rights reserved.</span>
             <span>•</span>
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
+            <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <span>•</span>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
+            <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
           </div>
           <div className="text-center sm:text-right text-xs">
-            Khartoum, Sudan • Powered by Vercel
+            Khartoum, Sudan • Powered by CeraByte
           </div>
         </div>
       </div>
