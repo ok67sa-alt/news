@@ -19,6 +19,7 @@ function NewArticle({ user }: { user: any }) {
     image: '', 
     videoUrl: '',
     videoFile: '',
+    hero: false,
     featured: false, 
     breaking: false, 
     status: 'DRAFT', 
@@ -240,15 +241,23 @@ function NewArticle({ user }: { user: any }) {
                   </select>
                 </div>
 
-                {/* Featured & Breaking Checkboxes */}
+                {/* Hero, Featured & Breaking Checkboxes */}
                 <div className="option-item checkboxes-row">
+                  <label className="checkbox-label-inline">
+                    <input 
+                      type="checkbox" 
+                      checked={!!article.hero} 
+                      onChange={e => setArticle({ ...article, hero: e.target.checked })} 
+                    />
+                    <span>Hero Article</span>
+                  </label>
                   <label className="checkbox-label-inline">
                     <input 
                       type="checkbox" 
                       checked={!!article.featured} 
                       onChange={e => setArticle({ ...article, featured: e.target.checked })} 
                     />
-                    <span>مميز</span>
+                    <span>Editor's Pick</span>
                   </label>
                   <label className="checkbox-label-inline">
                     <input 
@@ -256,7 +265,7 @@ function NewArticle({ user }: { user: any }) {
                       checked={!!article.breaking} 
                       onChange={e => setArticle({ ...article, breaking: e.target.checked })} 
                     />
-                    <span>عاجل</span>
+                    <span>Breaking News</span>
                   </label>
                 </div>
               </div>

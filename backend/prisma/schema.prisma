@@ -40,8 +40,9 @@ model Article {
   excerpt     String
   content     String
   readTime    String
-  featured    Boolean   @default(false)
-  breaking    Boolean   @default(false)
+  hero        Boolean   @default(false)  // Mark as main hero article
+  featured    Boolean   @default(false)  // Mark as editor's pick
+  breaking    Boolean   @default(false)  // Mark as breaking news
   views       Int       @default(0)
   image       String?   // Made optional for video-only articles
   videoUrl    String?   // URL for embedded videos (YouTube, Facebook, Twitter/X, etc.)

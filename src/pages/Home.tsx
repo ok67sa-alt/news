@@ -14,6 +14,7 @@ export default function Home() {
   const [articles, setArticles] = useState<StrapiArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [visibleLatestCount, setVisibleLatestCount] = useState(8);
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
   useEffect(() => {
     fetchAPI('/articles', {
@@ -36,9 +37,24 @@ export default function Home() {
   const videoArticles = articles.filter((a) => a.videoUrl || a.videoFile);
   const regularArticles = articles.filter((a) => !a.videoUrl && !a.videoFile);
 
-  // 2. Identify the Main Hero Story (Highest views among featured regular articles)
-  const featuredArticles = regularArticles.filter((a) => a.featured);
-  const heroArticle = [...featuredArticles].sort((a, b) => b.views - a.views)[0];
+  // 2. Get all hero articles (sorted by most recent)
+  const heroArticles = [...regularArticles]
+    .filter((a) => a.hero)
+    .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime());
+  
+  // Current hero article for display
+  const heroArticle = heroArticles[currentHeroIndex] || heroArticles[0];
+  
+  // Auto-rotate hero carousel every 2 seconds
+  useEffect(() => {
+    if (heroArticles.length <= 1) return; // No need to rotate if only one hero
+    
+    const interval = setInterval(() => {
+      setCurrentHeroIndex((prev) => (prev + 1) % heroArticles.length);
+    }, 2000); // 2 seconds
+    
+    return () => clearInterval(interval);
+  }, [heroArticles.length]);
 
   // 3. Top Stories (Most read articles excluding the hero, sorted by views descending)
   const topStories = [...regularArticles]
@@ -123,28 +139,48 @@ export default function Home() {
 
       {/* ================= HERO SECTION ================= */}
       <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10 border-b-4 border-brand-dark">
-        {/* Left & Center: Main Hero Story */}
+        {/* Left & Center: Main Hero Story with Carousel */}
         <div className="lg:col-span-2 space-y-4 lg:pr-8">
-          <span className="text-xs font-ui font-black uppercase text-white bg-brand-blue px-3 py-1.5 tracking-widest inline-block">
-            FEATURED COVERAGE
-          </span>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-ui font-black uppercase text-white bg-brand-blue px-3 py-1.5 tracking-widest inline-block">
+              FEATURED COVERAGE
+            </span>
+            {heroArticles.length > 1 && (
+              <div className="flex items-center space-x-2">
+                {heroArticles.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentHeroIndex(idx)}
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      idx === currentHeroIndex 
+                        ? 'w-8 bg-brand-red' 
+                        : 'w-2 bg-gray-300 hover:bg-gray-400'
+                    }`}
+                    aria-label={`Go to hero article ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
           <Link to={`/article/${heroArticle.slug}`} className="group block space-y-5">
             <div className="w-full aspect-[16/9] overflow-hidden bg-black relative shadow-lg">
               {!hasMediaImage(heroArticle.image) && heroArticle.videoFile && !heroArticle.videoUrl ? (
                 // Show actual video player for uploaded videos
                 <video 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-opacity duration-500"
                   preload="metadata"
+                  key={heroArticle.id} // Force re-render on hero change
                 >
                   <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/mp4" />
                   <source src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)} type="video/webm" />
                 </video>
               ) : (
-                // Show image or YouTube thumbnail
+                // Show image or YouTube thumbnail with fade transition
                 <img
+                  key={heroArticle.id} // Force re-render on hero change
                   src={getImageUrl(heroArticle.image, heroArticle.videoUrl, heroArticle.videoFile)}
                   alt={heroArticle.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out"
                 />
               )}
               {/* Video indicator overlay */}
@@ -155,6 +191,12 @@ export default function Home() {
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>
+                </div>
+              )}
+              {/* Hero count indicator */}
+              {heroArticles.length > 1 && (
+                <div className="absolute top-4 right-4 bg-black/70 text-white px-3 py-1 rounded-full text-xs font-ui font-bold">
+                  {currentHeroIndex + 1} / {heroArticles.length}
                 </div>
               )}
             </div>
@@ -195,7 +237,7 @@ export default function Home() {
           </h3>
           <div className="divide-y divide-gray-200">
               {articles
-                .filter((a) => a.featured && a.id !== heroArticle.id)
+                .filter((a) => a.featured && !a.hero) // Only featured, exclude hero articles
                 .slice(0, 4)
                 .map((article) => (
                 <div key={article.id} className="py-4 first:pt-0 last:pb-0">
