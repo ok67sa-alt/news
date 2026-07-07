@@ -45,11 +45,23 @@ export default function Home() {
     .filter((a) => a.id !== heroArticle?.id) // Exclude hero article
     .sort((a, b) => b.views - a.views)
     .slice(0, 6);
+  
+  console.log('📊 Top Stories (6 most viewed):', topStories.map(a => ({ 
+    id: a.id, 
+    title: a.title.substring(0, 40), 
+    views: a.views 
+  })));
 
   // 4. Trending News (Top 10 most viewed regular articles)
   const trendingArticles = [...regularArticles]
     .sort((a, b) => b.views - a.views)
     .slice(0, 10);
+  
+  console.log('📈 Trending (10 most viewed):', trendingArticles.map(a => ({ 
+    id: a.id, 
+    title: a.title.substring(0, 40), 
+    views: a.views 
+  })));
 
   // 5. Retrieve latest 4 articles for specific categories (excluding videos)
   const getCategoryArticles = (catName: string) => {
