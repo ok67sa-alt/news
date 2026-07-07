@@ -31,22 +31,23 @@ export function withAuth<P extends object>(
           credentials: 'include', // Important: send cookies
         });
 
-        if (!res.ok) {
-          // Not authenticated - redirect to login
+        const data = await res.json();
+
+        // If response indicates session expired or no user
+        if (!res.ok || !data.user) {
+          console.log('Session expired or not authenticated');
           router.replace('/admin/login');
           return;
         }
-
-        const data = await res.json();
         
         // Check if admin role is required
-        if (options.requireAdmin && data.role !== 'ADMIN') {
-          // User is authenticated but not admin - redirect to home
+        if (options.requireAdmin && data.user.role !== 'ADMIN') {
+          console.log('Admin role required but user is not admin');
           router.replace('/admin');
           return;
         }
 
-        setUser(data);
+        setUser(data.user);
         setLoading(false);
       } catch (err) {
         console.error('Auth check failed:', err);

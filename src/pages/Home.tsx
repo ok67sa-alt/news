@@ -300,40 +300,37 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 4. Sports & Culture Split */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {/* Sports Column */}
-            <div>
-              <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
-                <h3 className="font-headline font-black text-xl uppercase tracking-tight text-brand-dark">
-                  Sports
-                </h3>
-                <Link to="/category/sports" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase transition-colors">
-                  More <ChevronRight className="h-3 w-3 ml-0.5 inline" />
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 gap-6">
-                {sportsArticles.slice(0, 4).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="horizontal" />
-                ))}
-              </div>
+          {/* 4. Sports Block */}
+          <div>
+            <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
+                Sports
+              </h3>
+              <Link to="/category/sports" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                All Sports <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+              </Link>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {sportsArticles.slice(0, 4).map(art => (
+                <ArticleCard key={art.id} article={art} layout="vertical" />
+              ))}
+            </div>
+          </div>
 
-            {/* Culture Column */}
-            <div>
-              <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
-                <h3 className="font-headline font-black text-xl uppercase tracking-tight text-brand-dark">
-                  Culture
-                </h3>
-                <Link to="/category/culture" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase transition-colors">
-                  More <ChevronRight className="h-3 w-3 ml-0.5 inline" />
-                </Link>
-              </div>
-              <div className="grid grid-cols-1 gap-6">
-                {cultureArticles.slice(0, 4).map(art => (
-                  <ArticleCard key={art.id} article={art} layout="horizontal" />
-                ))}
-              </div>
+          {/* 5. Culture Block */}
+          <div>
+            <div className="flex justify-between items-center border-b-4 border-brand-dark pb-3 mb-6">
+              <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
+                Culture
+              </h3>
+              <Link to="/category/culture" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                All Culture <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              {cultureArticles.slice(0, 4).map(art => (
+                <ArticleCard key={art.id} article={art} layout="vertical" />
+              ))}
             </div>
           </div>
 

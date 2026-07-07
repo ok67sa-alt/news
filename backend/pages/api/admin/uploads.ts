@@ -20,16 +20,11 @@ const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
 
 async function saveToLocal(file: formidable.File): Promise<string> {
-  // IMPORTANT: In production (Railway, Vercel, etc.), uploads to local filesystem
-  // are EPHEMERAL and will be lost on redeployment. Use S3 for production!
-  
   const cwd = process.cwd();
   const uploadsDir = path.resolve(cwd, 'public', 'uploads');
   
-  // 🔍 DIAGNOSTIC LOGGING
   console.log('📁 CWD:', cwd);
   console.log('📁 Uploads Directory:', uploadsDir);
-  console.log('📁 Directory exists:', fs.existsSync(uploadsDir));
   
   if (!fs.existsSync(uploadsDir)) {
     console.log('📁 Creating uploads directory...');
@@ -58,11 +53,7 @@ async function saveToLocal(file: formidable.File): Promise<string> {
     console.warn('Failed to delete temp file:', err);
   }
 
-  // In production, warn about ephemeral storage
-  if (process.env.NODE_ENV === 'production' && !process.env.S3_BUCKET) {
-    console.warn('⚠️  WARNING: Uploading to local storage in production! Files will be lost on redeployment. Configure S3 for persistent storage.');
-  }
-
+  // Return path that will be served by /api/uploads/[...path].ts
   return `/uploads/${uniqueName}`;
 }
 
@@ -140,29 +131,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.setHeader('Allow', 'POST').status(405).json({ error: 'Method Not Allowed' });
   }
 
-  // 🔍 DIAGNOSTIC: Check environment
-  const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
-  const hasS3Configured = process.env.S3_BUCKET && process.env.S3_REGION;
+  // Check S3 configuration (optional - local storage is default)
+  const hasS3Configured = !!(process.env.S3_BUCKET && process.env.S3_REGION);
   
   console.log('📤 Upload request received');
   console.log('🌍 Environment:', process.env.NODE_ENV);
-  console.log('🚂 Railway Env:', process.env.RAILWAY_ENVIRONMENT);
-  console.log('📦 Storage:', hasS3Configured ? 'S3/R2 (Persistent)' : 'Local (Ephemeral)');
-  console.log('🔒 Production mode:', isProduction);
+  console.log('📦 Storage:', hasS3Configured ? 'S3/R2 (Persistent)' : 'Local Filesystem');
   
-  // ⚠️ TEMPORARY: Allow local uploads for testing (REMOVE IN PRODUCTION)
-  // TODO: Configure S3/R2 and re-enable this check
-  /*
-  if (isProduction && !hasS3Configured) {
-    console.error('🔴 CRITICAL: Production upload attempted without S3/R2 configuration!');
-    return res.status(503).json({ 
-      error: 'File uploads are not available. Server storage not configured.',
-      message: 'Contact administrator to configure S3 or Cloudflare R2 storage.',
-      code: 'STORAGE_NOT_CONFIGURED',
-      documentation: 'See RAILWAY_SETUP_GUIDE.md for setup instructions'
-    });
-  }
-  */
+  // S3 is optional - if not configured, use local storage
+  // Local storage is suitable for VPS deployments with persistent disks
   
   const form = formidable({ 
     multiples: false, 
@@ -206,15 +183,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       let url: string;
       
-      // Check if S3 is configured
-      if (process.env.S3_BUCKET && process.env.S3_REGION) {
-        console.log('☁️  Uploading to S3/R2 (persistent storage)...');
+      // Use S3 if configured, otherwise use local filesystem
+      if (hasS3Configured) {
+        console.log('☁️  Uploading to S3/R2...');
         url = await saveToS3(file);
-        console.log('✅ Upload successful:', url);
+        console.log('✅ S3 upload successful:', url);
       } else {
-        console.log('💾 Uploading to local storage (ephemeral - will be lost on redeploy)...');
+        console.log('💾 Uploading to local filesystem...');
         url = await saveToLocal(file);
-        console.log('⚠️  File saved locally - will be deleted on Railway restart!');
+        console.log('✅ Local upload successful:', url);
       }
 
       const fileType = ALLOWED_IMAGE_TYPES.includes(file.mimetype || '') ? 'image' : 'video';
@@ -232,7 +209,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         filename: file.originalFilename || 'unknown',
         size: file.size,
         mimetype: file.mimetype,
-        storage: process.env.S3_BUCKET ? 's3' : 'local'
+        storage: hasS3Configured ? 's3' : 'local'
       });
     } catch (uploadErr: any) {
       console.error('❌ Upload error:', uploadErr);

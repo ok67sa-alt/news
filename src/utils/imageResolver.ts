@@ -107,10 +107,9 @@ export function getImageUrl(imageVar: any, videoUrl?: string | null, videoFile?:
   if (imagePath.startsWith('http')) return imagePath;
 
   if (imagePath.startsWith('/uploads')) {
-    // On Railway, use API route to serve uploads since public directory serving has issues
-    // API route: /api/uploads/[...path].ts ensures files are accessible
-    const filename = imagePath.replace('/uploads/', '');
-    return `${API_URL}/api/uploads/${filename}`;
+    // Return the /uploads/ path directly
+    // Next.js will rewrite it to /api/uploads/ automatically via next.config.mjs
+    return `${API_URL}${imagePath}`;
   }
 
   const filename = imagePath.split('/').pop() || '';
