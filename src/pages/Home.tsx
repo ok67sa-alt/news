@@ -146,11 +146,11 @@ export default function Home() {
       />
 
       {/* ================= HERO SECTION ================= */}
-      <section className="pb-10 border-b-4 border-brand-dark">
+      <section className="pb-10 border-b border-gray-200">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left & Center: Main Hero Story with Carousel */}
-          <div className="lg:col-span-2 border-4 border-brand-dark overflow-hidden bg-white">
-            <div className="flex items-center justify-between p-4 bg-brand-blue border-b-4 border-brand-dark">
+          <div className="lg:col-span-2 overflow-hidden bg-white shadow-sm">
+            <div className="flex items-center justify-between p-4 bg-brand-blue border-b border-gray-200">
               <span className="text-xs font-ui font-black uppercase text-white tracking-widest">
                 FEATURED COVERAGE
               </span>
@@ -172,7 +172,7 @@ export default function Home() {
               )}
             </div>
             <Link to={`/article/${heroArticle.slug}`} className="group block">
-              <div className="w-full aspect-[16/9] overflow-hidden bg-black relative border-b-4 border-brand-dark">
+              <div className="w-full aspect-[16/9] overflow-hidden bg-black relative border-b border-gray-200">
                 {!hasMediaImage(heroArticle.image) && heroArticle.videoFile && !heroArticle.videoUrl ? (
                   <video 
                     className="w-full h-full object-cover transition-opacity duration-500"
@@ -232,8 +232,8 @@ export default function Home() {
           </div>
 
           {/* Right side: Editor's Picks */}
-          <div className="border-4 border-brand-dark bg-white">
-            <div className="p-4 bg-brand-red border-b-4 border-brand-dark">
+          <div className="bg-white shadow-sm">
+            <div className="p-4 bg-brand-red border-b border-gray-200">
               <h3 className="font-headline font-bold text-xl uppercase text-white tracking-tight">
                 Editor's Picks
               </h3>
@@ -266,7 +266,7 @@ export default function Home() {
                   </div>
                 ))}
             </div>
-            <div className="p-5 bg-brand-blue text-white text-center border-t-4 border-brand-dark">
+            <div className="p-5 bg-brand-blue text-white text-center border-t border-gray-200">
               <h5 className="font-headline font-bold text-sm tracking-tight uppercase mb-2">Support Independent Journalism</h5>
               <p className="text-xs leading-relaxed opacity-90">
                 Sudan Times delivers impartial news from the ground.
@@ -278,7 +278,7 @@ export default function Home() {
 
       {/* ================= TOP STORIES SECTION ================= */}
       <section className="py-12">
-        <div className="border-b-4 border-brand-dark pb-3 mb-8">
+        <div className="border-b-2 border-brand-dark pb-3 mb-8">
           <div className="flex items-end justify-between">
             <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
               Top Stories
@@ -299,15 +299,15 @@ export default function Home() {
       {videoArticles.length > 0 && <VideoSection videos={videoArticles} />}
 
       {/* ================= MULTI-COLUMN CONTENT FEED ================= */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 py-12 border-t-4 border-brand-dark">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 py-12 border-t border-gray-200">
         
         {/* Left Column (2/3 Width): Category Blocks and Latest Feed */}
         <div className="lg:col-span-2 space-y-12">
           
           {/* 1. Politics Block */}
           {politicsArticles.length > 0 && (
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex justify-between items-center p-4 bg-white border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Politics
                 </h3>
@@ -315,7 +315,7 @@ export default function Home() {
                   All Politics <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-brand-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
                 {politicsArticles.slice(0, 4).map((art, idx) => (
                   <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
                     <Link to={`/article/${art.slug}`} className="group block space-y-3">
@@ -350,8 +350,8 @@ export default function Home() {
 
           {/* 2. Economy Block */}
           {economyArticles.length > 0 && (
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex justify-between items-center p-4 bg-white border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Economy
                 </h3>
@@ -359,7 +359,7 @@ export default function Home() {
                   All Economy <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-brand-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
                 {economyArticles.slice(0, 4).map((art) => (
                   <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
                     <Link to={`/article/${art.slug}`} className="group block space-y-3">
@@ -394,8 +394,8 @@ export default function Home() {
 
           {/* 3. Technology Block */}
           {techArticles.length > 0 && (
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex justify-between items-center p-4 bg-white border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Technology
                 </h3>
@@ -403,7 +403,7 @@ export default function Home() {
                   All Tech <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-brand-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
                 {techArticles.slice(0, 4).map((art) => (
                   <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
                     <Link to={`/article/${art.slug}`} className="group block space-y-3">
@@ -438,8 +438,8 @@ export default function Home() {
 
           {/* 4. Sports Block */}
           {sportsArticles.length > 0 && (
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex justify-between items-center p-4 bg-white border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Sports
                 </h3>
@@ -447,7 +447,7 @@ export default function Home() {
                   All Sports <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-brand-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
                 {sportsArticles.slice(0, 4).map((art) => (
                   <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
                     <Link to={`/article/${art.slug}`} className="group block space-y-3">
@@ -482,8 +482,8 @@ export default function Home() {
 
           {/* 5. Culture Block */}
           {cultureArticles.length > 0 && (
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex justify-between items-center p-4 bg-white border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Culture
                 </h3>
@@ -491,7 +491,7 @@ export default function Home() {
                   All Culture <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-brand-dark">
+              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
                 {cultureArticles.slice(0, 4).map((art) => (
                   <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
                     <Link to={`/article/${art.slug}`} className="group block space-y-3">
@@ -525,8 +525,8 @@ export default function Home() {
           )}
 
           {/* 6. Latest News Feed */}
-          <div className="border-4 border-brand-dark bg-white">
-            <div className="p-4 bg-white border-b-4 border-brand-dark">
+          <div className="bg-white shadow-sm">
+            <div className="p-4 bg-gray-50 border-b-2 border-brand-dark">
               <h3 className="font-headline font-black text-2xl uppercase text-brand-dark">
                 Latest Reporting
               </h3>
@@ -581,7 +581,7 @@ export default function Home() {
             </div>
 
             {visibleLatestCount < latestArticles.length && (
-              <div className="p-6 text-center border-t-4 border-brand-dark bg-gray-50">
+              <div className="p-6 text-center border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={loadMoreLatest}
                   className="px-8 py-3 border-2 border-brand-dark hover:bg-brand-dark hover:text-white font-ui font-bold text-xs uppercase tracking-wider transition-all duration-200"
@@ -598,8 +598,8 @@ export default function Home() {
         <div className="space-y-8">
           <div className="sticky top-6 space-y-8">
             {/* Trending Articles */}
-            <div className="border-4 border-brand-dark bg-white">
-              <div className="flex items-center space-x-2 p-4 bg-brand-red border-b-4 border-brand-dark">
+            <div className="bg-white shadow-sm">
+              <div className="flex items-center space-x-2 p-4 bg-brand-red border-b border-gray-200">
                 <TrendingUp className="h-6 w-6 text-white" />
                 <h3 className="font-headline font-black text-xl uppercase tracking-tight text-white">
                   Trending
@@ -643,7 +643,7 @@ export default function Home() {
             </div>
 
             {/* App Promo */}
-            <div className="border-4 border-brand-dark bg-brand-blue text-white overflow-hidden">
+            <div className="bg-brand-blue text-white overflow-hidden shadow-sm">
               <div className="p-6 text-center space-y-4">
                 <h4 className="font-headline text-xl font-bold uppercase tracking-tight">Sudan Times App</h4>
                 <p className="text-xs leading-relaxed opacity-90 font-ui">
