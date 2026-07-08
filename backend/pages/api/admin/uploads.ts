@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import fs from 'fs';
 import path from 'path';
 import formidable from 'formidable';
+import { v2 as cloudinary } from 'cloudinary';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 export const config = {
@@ -9,6 +10,22 @@ export const config = {
     bodyParser: false,
   },
 };
+
+// Configure Cloudinary
+const cloudinaryConfigured = !!(
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET
+);
+
+if (cloudinaryConfigured) {
+  cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+  });
+  console.log('☁️  Cloudinary configured:', process.env.CLOUDINARY_CLOUD_NAME);
+}
 
 // Allowed file types
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
@@ -18,6 +35,36 @@ const ALLOWED_TYPES = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_VIDEO_TYPES];
 // Max file sizes (in bytes)
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024; // 100MB
+
+async function saveToCloudinary(file: formidable.File): Promise<string> {
+  const isVideo = ALLOWED_VIDEO_TYPES.includes(file.mimetype || '');
+  const folder = process.env.CLOUDINARY_FOLDER || 'sudan-news';
+  
+  console.log('☁️  Uploading to Cloudinary:', file.originalFilename);
+  
+  try {
+    const result = await cloudinary.uploader.upload(file.filepath, {
+      folder: folder,
+      resource_type: isVideo ? 'video' : 'image',
+      public_id: `${path.basename(file.originalFilename || 'upload', path.extname(file.originalFilename || ''))}-${Date.now()}`,
+      overwrite: false,
+    });
+    
+    console.log('✅ Cloudinary upload successful:', result.secure_url);
+    
+    // Clean up temp file
+    try {
+      await fs.promises.unlink(file.filepath);
+    } catch (err) {
+      console.warn('Failed to delete temp file:', err);
+    }
+    
+    return result.secure_url;
+  } catch (error: any) {
+    console.error('❌ Cloudinary upload failed:', error);
+    throw new Error(`Cloudinary upload failed: ${error.message}`);
+  }
+}
 
 async function saveToLocal(file: formidable.File): Promise<string> {
   const cwd = process.cwd();
@@ -101,96 +148,74 @@ async function saveToS3(file: formidable.File): Promise<string> {
   return publicUrl;
 }
 
-function validateFile(file: formidable.File): { valid: boolean; error?: string } {
-  // Check file type
-  if (!file.mimetype || !ALLOWED_TYPES.includes(file.mimetype)) {
-    return {
-      valid: false,
-      error: `Invalid file type. Allowed types: ${ALLOWED_TYPES.join(', ')}`
-    };
-  }
-
-  // Check file size
-  const isImage = ALLOWED_IMAGE_TYPES.includes(file.mimetype);
-  const isVideo = ALLOWED_VIDEO_TYPES.includes(file.mimetype);
-  const maxSize = isImage ? MAX_IMAGE_SIZE : MAX_VIDEO_SIZE;
-
-  if (file.size > maxSize) {
-    const maxSizeMB = maxSize / (1024 * 1024);
-    return {
-      valid: false,
-      error: `File too large. Maximum size for ${isImage ? 'images' : 'videos'} is ${maxSizeMB}MB`
-    };
-  }
-
-  return { valid: true };
-}
-
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return res.setHeader('Allow', 'POST').status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Check S3 configuration (optional - local storage is default)
+  // Check storage configuration
+  const hasCloudinary = cloudinaryConfigured;
   const hasS3Configured = !!(process.env.S3_BUCKET && process.env.S3_REGION);
   
   console.log('📤 Upload request received');
   console.log('🌍 Environment:', process.env.NODE_ENV);
-  console.log('📦 Storage:', hasS3Configured ? 'S3/R2 (Persistent)' : 'Local Filesystem');
-  
-  // S3 is optional - if not configured, use local storage
-  // Local storage is suitable for VPS deployments with persistent disks
-  
-  const form = formidable({ 
-    multiples: false, 
+  console.log('📦 Storage:', hasCloudinary ? 'Cloudinary' : hasS3Configured ? 'S3/R2' : 'Local Filesystem');
+
+  const form = formidable({
+    maxFileSize: MAX_VIDEO_SIZE,
     keepExtensions: true,
-    maxFileSize: MAX_VIDEO_SIZE, // Set to max of all allowed types
   });
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      console.error('Form parse error:', err);
-      return res.status(400).json({ error: 'Failed to parse form data', details: err.message });
+      console.error('Form parsing error:', err);
+      return res.status(400).json({ error: 'File upload failed', details: err.message });
     }
 
-    // Handle both 'file' and 'files' field names
-    // In formidable v3, files are returned as arrays
-    let file: formidable.File | undefined;
-    
-    if (files.file) {
-      file = Array.isArray(files.file) ? files.file[0] : files.file;
-    } else if (files.files) {
-      file = Array.isArray(files.files) ? files.files[0] : files.files;
-    }
-
+    const file = Array.isArray(files.file) ? files.file[0] : files.file;
     if (!file) {
-      console.error('No file found in upload. Received files:', Object.keys(files));
-      return res.status(400).json({ error: 'No file uploaded. Please include a file in the request.' });
+      return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Validate file
-    const validation = validateFile(file);
-    if (!validation.valid) {
-      // Clean up temp file
-      try {
-        await fs.promises.unlink(file.filepath);
-      } catch (unlinkErr) {
-        console.warn('Failed to delete invalid temp file:', unlinkErr);
-      }
-      return res.status(400).json({ error: validation.error });
+    // Validate file type
+    if (!ALLOWED_TYPES.includes(file.mimetype || '')) {
+      return res.status(400).json({ 
+        error: 'Invalid file type', 
+        allowed: ALLOWED_TYPES,
+        received: file.mimetype 
+      });
+    }
+
+    // Validate file size
+    const isVideo = ALLOWED_VIDEO_TYPES.includes(file.mimetype || '');
+    const maxSize = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (file.size > maxSize) {
+      return res.status(400).json({ 
+        error: 'File too large', 
+        maxSize: `${maxSize / 1024 / 1024}MB`,
+        fileSize: `${(file.size / 1024 / 1024).toFixed(2)}MB`
+      });
     }
 
     try {
       let url: string;
+      let storage: string;
       
-      // Use S3 if configured, otherwise use local filesystem
-      if (hasS3Configured) {
+      // Priority: Cloudinary > S3 > Local
+      if (hasCloudinary) {
+        console.log('☁️  Uploading to Cloudinary...');
+        url = await saveToCloudinary(file);
+        storage = 'cloudinary';
+        console.log('✅ Cloudinary upload successful:', url);
+      } else if (hasS3Configured) {
         console.log('☁️  Uploading to S3/R2...');
         url = await saveToS3(file);
+        storage = 's3';
         console.log('✅ S3 upload successful:', url);
       } else {
         console.log('💾 Uploading to local filesystem...');
         url = await saveToLocal(file);
+        storage = 'local';
         console.log('✅ Local upload successful:', url);
       }
 
@@ -200,7 +225,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         type: fileType,
         url,
         size: `${(file.size / 1024).toFixed(2)}KB`,
-        filename: file.originalFilename
+        filename: file.originalFilename,
+        storage
       });
       
       return res.status(201).json({ 
@@ -209,7 +235,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         filename: file.originalFilename || 'unknown',
         size: file.size,
         mimetype: file.mimetype,
-        storage: hasS3Configured ? 's3' : 'local'
+        storage
       });
     } catch (uploadErr: any) {
       console.error('❌ Upload error:', uploadErr);
