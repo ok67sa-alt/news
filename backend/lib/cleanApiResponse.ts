@@ -100,6 +100,7 @@ export function prepareArticleForSubmission(article: any) {
   if (article.videoUrl !== undefined) payload.videoUrl = article.videoUrl || null;
   if (article.videoFile !== undefined) payload.videoFile = article.videoFile || null;
   if (article.readTime !== undefined) payload.readTime = article.readTime;
+  if (article.hero !== undefined) payload.hero = Boolean(article.hero);
   if (article.featured !== undefined) payload.featured = Boolean(article.featured);
   if (article.breaking !== undefined) payload.breaking = Boolean(article.breaking);
   if (article.status !== undefined) payload.status = article.status;

@@ -39,11 +39,16 @@ export default function Home() {
 
   // 2. Get all hero articles (sorted by most recent)
   const heroArticles = [...regularArticles]
-    .filter((a) => a.hero)
+    .filter((a) => a.hero === true) // Only articles explicitly marked as hero
     .sort((a, b) => new Date(b.publishedAt || Date.now()).getTime() - new Date(a.publishedAt || Date.now()).getTime());
   
+  // Fallback: if no hero articles, use the most viewed featured article
+  const fallbackHero = heroArticles.length === 0 
+    ? [...regularArticles].filter((a) => a.featured).sort((a, b) => b.views - a.views)[0]
+    : null;
+  
   // Current hero article for display
-  const heroArticle = heroArticles[currentHeroIndex] || heroArticles[0];
+  const heroArticle = heroArticles[currentHeroIndex] || fallbackHero;
   
   // Auto-rotate hero carousel every 2 seconds
   useEffect(() => {
@@ -55,6 +60,9 @@ export default function Home() {
     
     return () => clearInterval(interval);
   }, [heroArticles.length]);
+  
+  console.log('🎯 Hero Articles:', heroArticles.length, heroArticles.map(a => a.title));
+  console.log('🎯 Fallback Hero:', fallbackHero?.title || 'None');
 
   // 3. Top Stories (Most read articles excluding the hero, sorted by views descending)
   const topStories = [...regularArticles]
