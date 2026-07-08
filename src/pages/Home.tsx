@@ -147,11 +147,11 @@ export default function Home() {
 
       {/* ================= HERO SECTION ================= */}
       <section className="pb-10 border-b border-gray-200">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left & Center: Main Hero Story with Carousel */}
-          <div className="lg:col-span-2 overflow-hidden bg-white shadow-sm">
-            <div className="flex items-center justify-between p-4 bg-brand-blue border-b border-gray-200">
-              <span className="text-xs font-ui font-black uppercase text-white tracking-widest">
+        <div className="grid grid-cols-1 gap-8">
+          {/* Main Hero Story with Carousel */}
+          <div className="overflow-hidden bg-white">
+            <div className="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
+              <span className="text-xs font-ui font-black uppercase text-brand-dark tracking-widest">
                 FEATURED COVERAGE
               </span>
               {heroArticles.length > 1 && (
@@ -162,8 +162,8 @@ export default function Home() {
                       onClick={() => setCurrentHeroIndex(idx)}
                       className={`h-2 rounded-full transition-all duration-300 ${
                         idx === currentHeroIndex 
-                          ? 'w-8 bg-white' 
-                          : 'w-2 bg-white/40 hover:bg-white/60'
+                          ? 'w-8 bg-brand-dark' 
+                          : 'w-2 bg-gray-300 hover:bg-gray-400'
                       }`}
                       aria-label={`Go to hero article ${idx + 1}`}
                     />
@@ -172,7 +172,7 @@ export default function Home() {
               )}
             </div>
             <Link to={`/article/${heroArticle.slug}`} className="group block">
-              <div className="w-full aspect-[16/9] overflow-hidden bg-black relative border-b border-gray-200">
+              <div className="w-full aspect-[21/9] overflow-hidden bg-black relative">
                 {!hasMediaImage(heroArticle.image) && heroArticle.videoFile && !heroArticle.videoUrl ? (
                   <video 
                     className="w-full h-full object-cover transition-opacity duration-500"
@@ -205,93 +205,60 @@ export default function Home() {
                   </div>
                 )}
               </div>
-              <div className="p-6">
-                <h2 className="font-headline font-black text-3xl sm:text-4xl text-brand-dark group-hover:text-brand-red transition-colors leading-tight mb-4">
+              <div className="p-6 bg-white">
+                <h2 className="font-headline font-black text-3xl sm:text-4xl text-brand-dark group-hover:text-brand-red transition-colors leading-tight mb-3">
                   {heroArticle.title}
                 </h2>
-                <p className="text-base text-gray-600 font-body leading-relaxed mb-4">
+                <p className="text-base text-gray-600 font-body leading-relaxed">
                   {heroArticle.excerpt}
                 </p>
-                <div className="flex items-center justify-between text-xs font-ui text-gray-500 pt-3 border-t border-gray-200 flex-wrap gap-3">
-                  <div className="flex items-center space-x-3 flex-wrap gap-y-1">
-                    <span className="font-bold text-brand-dark">By {getAuthorName(heroArticle)}</span>
-                    <span>•</span>
-                    <span className="flex items-center space-x-1">
-                      <Calendar className="h-3.5 w-3.5" />
-                      <span>{formattedHeroDate}</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center space-x-1">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>{heroArticle.readTime}</span>
-                    </span>
-                  </div>
-                </div>
               </div>
             </Link>
-          </div>
-
-          {/* Right side: Editor's Picks */}
-          <div className="bg-white shadow-sm">
-            <div className="p-4 bg-brand-red border-b border-gray-200">
-              <h3 className="font-headline font-bold text-xl uppercase text-white tracking-tight">
-                Editor's Picks
-              </h3>
-            </div>
-            <div className="divide-y divide-gray-200">
-              {articles
-                .filter((a) => a.featured && !a.hero)
-                .slice(0, 4)
-                .map((article) => (
-                  <div key={article.id} className="p-4 hover:bg-gray-50 transition-colors">
-                    <span className="text-[10px] font-ui font-black uppercase text-white bg-brand-red px-2 py-0.5 tracking-widest">
-                      {getCategoryName(article)}
-                    </span>
-                    <Link 
-                      to={`/article/${article.slug}`} 
-                      className="group block mt-2"
-                    >
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight">
-                        {article.title}
-                      </h4>
-                    </Link>
-                    <div className="flex items-center space-x-3 text-[11px] font-ui text-gray-500 mt-2">
-                      <span>By {getAuthorName(article)}</span>
-                      <span>•</span>
-                      <span className="flex items-center space-x-0.5">
-                        <Eye className="h-3 w-3" />
-                        <span>{article.views.toLocaleString()}</span>
-                      </span>
-                    </div>
-                  </div>
-                ))}
-            </div>
-            <div className="p-5 bg-brand-blue text-white text-center border-t border-gray-200">
-              <h5 className="font-headline font-bold text-sm tracking-tight uppercase mb-2">Support Independent Journalism</h5>
-              <p className="text-xs leading-relaxed opacity-90">
-                Sudan Times delivers impartial news from the ground.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
-      {/* ================= TOP STORIES SECTION ================= */}
+      {/* ================= EDITOR'S PICKS SECTION ================= */}
       <section className="py-12">
         <div className="border-b border-gray-200 pb-3 mb-8">
-          <div className="flex items-end justify-between">
-            <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
-              Top Stories
-            </h3>
-            <span className="text-[10px] font-ui font-bold text-gray-500 uppercase tracking-wider mb-1">
-              Most Viewed
+          <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
+            Editor's Picks
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {articles
+            .filter((a) => a.featured && !a.hero)
+            .slice(0, 4)
+            .map((article) => (
+              <ArticleCard key={article.id} article={article} layout="vertical" />
+            ))}
+        </div>
+      </section>
+
+      {/* ================= TRENDING STORIES SECTION ================= */}
+      <section className="py-12 bg-gray-50 -mx-4 sm:-mx-6 lg:-mx-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="border-b border-gray-200 pb-3 mb-8">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="h-7 w-7 text-brand-red" />
+              <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
+                Trending Stories
+              </h3>
+            </div>
+            <span className="text-xs font-ui text-gray-500 uppercase tracking-wider mt-1 block">
+              Most read reports in Sudan over the past 24 hours
             </span>
           </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {topStories.map((article) => (
-            <ArticleCard key={article.id} article={article} layout="vertical" />
-          ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {topStories.map((article, idx) => (
+              <div key={article.id} className="relative">
+                <div className="absolute -top-3 -left-3 w-10 h-10 bg-brand-red text-white font-headline font-black text-xl flex items-center justify-center rounded-full shadow-lg z-10">
+                  {idx + 1}
+                </div>
+                <ArticleCard article={article} layout="vertical" />
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -306,43 +273,18 @@ export default function Home() {
           
           {/* 1. Politics Block */}
           {politicsArticles.length > 0 && (
-            <div className="bg-white shadow-sm">
+            <div className="bg-white">
               <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Politics
                 </h3>
-                <Link to="/category/politics" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
-                  All Politics <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                <Link to="/category/politics" className="text-xs font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                  All Politics <ChevronRight className="h-4 w-4 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
-                {politicsArticles.slice(0, 4).map((art, idx) => (
-                  <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
-                    <Link to={`/article/${art.slug}`} className="group block space-y-3">
-                      <div className="w-full aspect-video overflow-hidden bg-black">
-                        <img
-                          src={getImageUrl(art.image, art.videoUrl, art.videoFile)}
-                          alt={art.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight line-clamp-3">
-                        {art.title}
-                      </h4>
-                      <div className="flex items-center space-x-2 text-[10px] font-ui text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{art.readTime}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{art.views?.toLocaleString() || 0}</span>
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
+                {politicsArticles.slice(0, 4).map((art) => (
+                  <ArticleCard key={art.id} article={art} layout="vertical" />
                 ))}
               </div>
             </div>
@@ -350,43 +292,18 @@ export default function Home() {
 
           {/* 2. Economy Block */}
           {economyArticles.length > 0 && (
-            <div className="bg-white shadow-sm">
+            <div className="bg-white">
               <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Economy
                 </h3>
-                <Link to="/category/economy" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
-                  All Economy <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                <Link to="/category/economy" className="text-xs font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                  All Economy <ChevronRight className="h-4 w-4 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                 {economyArticles.slice(0, 4).map((art) => (
-                  <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
-                    <Link to={`/article/${art.slug}`} className="group block space-y-3">
-                      <div className="w-full aspect-video overflow-hidden bg-black">
-                        <img
-                          src={getImageUrl(art.image, art.videoUrl, art.videoFile)}
-                          alt={art.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight line-clamp-3">
-                        {art.title}
-                      </h4>
-                      <div className="flex items-center space-x-2 text-[10px] font-ui text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{art.readTime}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{art.views?.toLocaleString() || 0}</span>
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+                  <ArticleCard key={art.id} article={art} layout="vertical" />
                 ))}
               </div>
             </div>
@@ -394,43 +311,18 @@ export default function Home() {
 
           {/* 3. Technology Block */}
           {techArticles.length > 0 && (
-            <div className="bg-white shadow-sm">
+            <div className="bg-white">
               <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Technology
                 </h3>
-                <Link to="/category/technology" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
-                  All Tech <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                <Link to="/category/technology" className="text-xs font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                  All Tech <ChevronRight className="h-4 w-4 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                 {techArticles.slice(0, 4).map((art) => (
-                  <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
-                    <Link to={`/article/${art.slug}`} className="group block space-y-3">
-                      <div className="w-full aspect-video overflow-hidden bg-black">
-                        <img
-                          src={getImageUrl(art.image, art.videoUrl, art.videoFile)}
-                          alt={art.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight line-clamp-3">
-                        {art.title}
-                      </h4>
-                      <div className="flex items-center space-x-2 text-[10px] font-ui text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{art.readTime}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{art.views?.toLocaleString() || 0}</span>
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+                  <ArticleCard key={art.id} article={art} layout="vertical" />
                 ))}
               </div>
             </div>
@@ -438,43 +330,18 @@ export default function Home() {
 
           {/* 4. Sports Block */}
           {sportsArticles.length > 0 && (
-            <div className="bg-white shadow-sm">
+            <div className="bg-white">
               <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Sports
                 </h3>
-                <Link to="/category/sports" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
-                  All Sports <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                <Link to="/category/sports" className="text-xs font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                  All Sports <ChevronRight className="h-4 w-4 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                 {sportsArticles.slice(0, 4).map((art) => (
-                  <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
-                    <Link to={`/article/${art.slug}`} className="group block space-y-3">
-                      <div className="w-full aspect-video overflow-hidden bg-black">
-                        <img
-                          src={getImageUrl(art.image, art.videoUrl, art.videoFile)}
-                          alt={art.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight line-clamp-3">
-                        {art.title}
-                      </h4>
-                      <div className="flex items-center space-x-2 text-[10px] font-ui text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{art.readTime}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{art.views?.toLocaleString() || 0}</span>
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+                  <ArticleCard key={art.id} article={art} layout="vertical" />
                 ))}
               </div>
             </div>
@@ -482,58 +349,33 @@ export default function Home() {
 
           {/* 5. Culture Block */}
           {cultureArticles.length > 0 && (
-            <div className="bg-white shadow-sm">
+            <div className="bg-white">
               <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Culture
                 </h3>
-                <Link to="/category/culture" className="text-[11px] font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
-                  All Culture <ChevronRight className="h-3.5 w-3.5 ml-0.5" />
+                <Link to="/category/culture" className="text-xs font-ui font-bold text-brand-red hover:text-brand-dark uppercase flex items-center transition-colors">
+                  All Culture <ChevronRight className="h-4 w-4 ml-0.5" />
                 </Link>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 divide-x divide-y divide-gray-200">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                 {cultureArticles.slice(0, 4).map((art) => (
-                  <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
-                    <Link to={`/article/${art.slug}`} className="group block space-y-3">
-                      <div className="w-full aspect-video overflow-hidden bg-black">
-                        <img
-                          src={getImageUrl(art.image, art.videoUrl, art.videoFile)}
-                          alt={art.title}
-                          loading="lazy"
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      </div>
-                      <h4 className="font-headline font-bold text-base text-brand-dark group-hover:text-brand-red transition-colors leading-tight line-clamp-3">
-                        {art.title}
-                      </h4>
-                      <div className="flex items-center space-x-2 text-[10px] font-ui text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <Clock className="h-3 w-3" />
-                          <span>{art.readTime}</span>
-                        </span>
-                        <span>•</span>
-                        <span className="flex items-center space-x-1">
-                          <Eye className="h-3 w-3" />
-                          <span>{art.views?.toLocaleString() || 0}</span>
-                        </span>
-                      </div>
-                    </Link>
-                  </div>
+                  <ArticleCard key={art.id} article={art} layout="vertical" />
                 ))}
               </div>
             </div>
           )}
 
           {/* 6. Latest News Feed */}
-          <div className="bg-white shadow-sm">
-            <div className="p-4 bg-gray-50 border-b-2 border-brand-dark">
+          <div className="bg-white">
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
               <h3 className="font-headline font-black text-2xl uppercase text-brand-dark">
                 Latest Reporting
               </h3>
             </div>
-            <div className="divide-y divide-gray-200">
+            <div className="grid grid-cols-1 gap-6 p-6">
               {displayedLatest.map((art) => (
-                <div key={art.id} className="p-5 hover:bg-gray-50 transition-colors">
+                <div key={art.id} className="border-b border-gray-200 pb-6 last:border-0 last:pb-0">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link 
                       to={`/article/${art.slug}`} 
@@ -547,7 +389,7 @@ export default function Home() {
                       />
                     </Link>
                     <div className="flex-1 space-y-2">
-                      <span className="text-xs font-ui font-bold uppercase text-white bg-brand-blue px-2 py-1 rounded inline-block">
+                      <span className="text-xs font-ui font-bold uppercase text-brand-red">
                         {getCategoryName(art)}
                       </span>
                       <Link 
@@ -584,7 +426,7 @@ export default function Home() {
               <div className="p-6 text-center border-t border-gray-200 bg-gray-50">
                 <button
                   onClick={loadMoreLatest}
-                  className="px-8 py-3 border-2 border-brand-dark hover:bg-brand-dark hover:text-white font-ui font-bold text-xs uppercase tracking-wider transition-all duration-200"
+                  className="px-8 py-3 border border-brand-dark hover:bg-brand-dark hover:text-white font-ui font-bold text-xs uppercase tracking-wider transition-all duration-200"
                 >
                   Load More Articles
                 </button>
