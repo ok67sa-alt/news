@@ -278,7 +278,7 @@ export default function Home() {
 
       {/* ================= TOP STORIES SECTION ================= */}
       <section className="py-12">
-        <div className="border-b-2 border-brand-dark pb-3 mb-8">
+        <div className="border-b border-gray-200 pb-3 mb-8">
           <div className="flex items-end justify-between">
             <h3 className="font-headline font-black text-3xl tracking-tight text-brand-dark uppercase">
               Top Stories
@@ -307,7 +307,7 @@ export default function Home() {
           {/* 1. Politics Block */}
           {politicsArticles.length > 0 && (
             <div className="bg-white shadow-sm">
-              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Politics
                 </h3>
@@ -351,7 +351,7 @@ export default function Home() {
           {/* 2. Economy Block */}
           {economyArticles.length > 0 && (
             <div className="bg-white shadow-sm">
-              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Economy
                 </h3>
@@ -395,7 +395,7 @@ export default function Home() {
           {/* 3. Technology Block */}
           {techArticles.length > 0 && (
             <div className="bg-white shadow-sm">
-              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Technology
                 </h3>
@@ -439,7 +439,7 @@ export default function Home() {
           {/* 4. Sports Block */}
           {sportsArticles.length > 0 && (
             <div className="bg-white shadow-sm">
-              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Sports
                 </h3>
@@ -483,7 +483,7 @@ export default function Home() {
           {/* 5. Culture Block */}
           {cultureArticles.length > 0 && (
             <div className="bg-white shadow-sm">
-              <div className="flex justify-between items-center p-4 bg-gray-50 border-b-2 border-brand-dark">
+              <div className="flex justify-between items-center p-4 bg-gray-50 border-b border-gray-200">
                 <h3 className="font-headline font-black text-2xl uppercase tracking-tight text-brand-dark">
                   Culture
                 </h3>
