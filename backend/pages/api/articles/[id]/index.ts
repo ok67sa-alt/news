@@ -50,6 +50,7 @@ function sanitizeUpdateData(payload: any) {
   if (payload.readTime !== undefined) data.readTime = payload.readTime;
   if (payload.image !== undefined) data.image = payload.image;
   if (payload.videoUrl !== undefined) data.videoUrl = payload.videoUrl || null;
+  if (payload.hero !== undefined) data.hero = Boolean(payload.hero);
   if (payload.featured !== undefined) data.featured = Boolean(payload.featured);
   if (payload.breaking !== undefined) data.breaking = Boolean(payload.breaking);
   if (payload.status !== undefined) data.status = payload.status;

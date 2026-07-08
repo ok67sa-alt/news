@@ -41,6 +41,7 @@ function sanitizeArticleData(payload: any) {
     image: payload.image || null, // Allow null for video-only articles
     videoUrl: payload.videoUrl || null,
     videoFile: payload.videoFile || null,
+    hero: Boolean(payload.hero),
     featured: Boolean(payload.featured),
     breaking: Boolean(payload.breaking),
     status: payload.status || 'DRAFT',
