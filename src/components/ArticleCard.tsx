@@ -121,7 +121,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
         {/* Thumbnail Image or Video */}
         <Link 
           to={`/article/${article.slug}`} 
-          className="w-full sm:w-1/3 md:w-1/4 aspect-video overflow-hidden bg-black block shrink-0 border border-gray-200 relative group"
+          className="w-full sm:w-1/3 md:w-1/4 aspect-video overflow-hidden bg-black block shrink-0 relative group"
         >
           {hasVideoOnly && isUploadedVideo ? (
             // Show actual video player for uploaded videos
@@ -188,12 +188,12 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-50px' }}
       transition={{ duration: 0.5 }}
-      className="flex flex-col h-full bg-white border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all duration-200"
+      className="flex flex-col h-full bg-white shadow-sm hover:shadow-md transition-all duration-200"
     >
       {/* Image Container or Video */}
       <Link 
         to={`/article/${article.slug}`} 
-        className="w-full aspect-video overflow-hidden bg-black block border-b border-gray-200 relative group"
+        className="w-full aspect-video overflow-hidden bg-black block relative group"
       >
         {hasVideoOnly && isUploadedVideo ? (
           // Show actual video player for uploaded videos
