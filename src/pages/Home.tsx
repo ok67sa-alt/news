@@ -484,16 +484,49 @@ export default function Home() {
               </div>
             </div>
 
-            {/* App Promo */}
-            <div className="bg-brand-blue text-white overflow-hidden shadow-sm">
-              <div className="p-6 text-center space-y-4">
-                <h4 className="font-headline text-xl font-bold uppercase tracking-tight">Sudan Times App</h4>
-                <p className="text-xs leading-relaxed opacity-90 font-ui">
-                  Read breaking reports on-the-go. Secure connection, custom bookmarks, and offline database reading.
-                </p>
-                <button className="w-full py-3 bg-white text-brand-dark font-ui font-black text-xs uppercase tracking-wider hover:bg-gray-100 transition-colors">
-                  Coming Soon to App Stores
-                </button>
+            {/* What to Read Today - Least Viewed Articles */}
+            <div className="bg-white shadow-sm">
+              <div className="p-4 bg-brand-blue border-b border-gray-200">
+                <h3 className="font-headline font-black text-xl uppercase tracking-tight text-white">
+                  What to Read Today?
+                </h3>
+              </div>
+              
+              <div className="p-4 text-xs font-ui text-gray-600 leading-relaxed border-b border-gray-200">
+                Discover hidden stories you might have missed.
+              </div>
+
+              <div className="divide-y divide-gray-200">
+                {[...regularArticles]
+                  .filter((a) => !a.hero && !a.featured) // Exclude hero and featured
+                  .sort((a, b) => a.views - b.views) // Sort by least viewed first
+                  .slice(0, 5)
+                  .map((article) => (
+                    <div key={article.id} className="p-4 hover:bg-gray-50 transition-colors">
+                      <span className="text-xs font-ui font-bold uppercase text-brand-red tracking-wider block mb-2">
+                        {getCategoryName(article)}
+                      </span>
+                      <Link 
+                        to={`/article/${article.slug}`} 
+                        className="group block"
+                      >
+                        <h4 className="font-headline font-bold text-sm text-brand-dark group-hover:text-brand-red transition-colors leading-snug mb-2">
+                          {article.title}
+                        </h4>
+                      </Link>
+                      <p className="text-xs text-gray-600 leading-relaxed line-clamp-2 mb-2">
+                        {article.excerpt}
+                      </p>
+                      <div className="flex items-center space-x-2 text-xs font-ui text-gray-500">
+                        <span className="flex items-center space-x-1">
+                          <Clock className="h-2.5 w-2.5" />
+                          <span>{article.readTime}</span>
+                        </span>
+                        <span>•</span>
+                        <span>By {getAuthorName(article)}</span>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
