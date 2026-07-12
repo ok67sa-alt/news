@@ -87,7 +87,7 @@ mysql -u root -p
 CREATE DATABASE sudan_times CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 # Create user (optional)
-CREATE USER 'sudanuser'@'localhost' IDENTIFIED BY 'your_password';
+CREATE USER 'sudanuser'@'localhost' IDENTIFIED BY '3100';
 GRANT ALL PRIVILEGES ON sudan_times.* TO 'sudanuser'@'localhost';
 FLUSH PRIVILEGES;
 EXIT;
