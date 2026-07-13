@@ -136,4 +136,4 @@ All rights reserved © 2026 Sudan News Today
 
 ---
 
-**Built with ❤️ for independent journalism in Sudan**
+**Built with ❤️ for  in Sudan**

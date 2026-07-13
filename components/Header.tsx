@@ -70,7 +70,7 @@ export default function Header() {
             <span className="text-white">Khartoum 38°C</span>
           </div>
           <span className="hidden md:inline text-gray-300">|</span>
-          <button 
+          <button
             onClick={handleSearchClick}
             className="flex items-center space-x-1.5 hover:text-brand-red transition-colors duration-200 text-white hover:text-brand-red px-2 py-1"
             aria-label="Search articles"
@@ -100,8 +100,8 @@ export default function Header() {
           <div className="flex justify-between items-center">
             {/* Desktop Categories */}
             <nav className="hidden lg:flex space-x-6 text-sm font-ui font-bold tracking-wider uppercase">
-              <Link 
-                href="/" 
+              <Link
+                href="/"
                 className={router.pathname === "/" ? "text-brand-red border-b-2 border-brand-red pb-1" : "text-white hover:text-gray-100 transition-colors pb-1"}
               >
                 Home
@@ -118,10 +118,7 @@ export default function Header() {
             </nav>
 
             {/* Mobile / Tablet Menu Button */}
-            <div className="flex lg:hidden justify-between w-full items-center">
-              <span className="hidden sm:inline-block text-xs font-bold text-white font-ui">
-                Independent Journalism
-              </span>
+            <div className="mobile-nav-toggle-wrapper justify-between w-full items-center">
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-brand-red hover:bg-blue-800 focus:outline-none ml-auto"
@@ -138,7 +135,7 @@ export default function Header() {
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
-          <div 
+          <div
             className="fixed inset-0 bg-black bg-opacity-40 transition-opacity"
             onClick={() => setIsOpen(false)}
           ></div>

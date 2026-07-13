@@ -2041,3 +2041,13 @@ tbody tr:hover {
     text-align: right;
   }
 }
+
+.mobile-nav-toggle-wrapper {
+  display: flex !important;
+}
+
+@media (min-width: 1024px) {
+  .mobile-nav-toggle-wrapper {
+    display: none !important;
+  }
+}
