@@ -1,10 +1,11 @@
-const { spawn } = require('child_process');
-const path = require('path');
+const { createServer } = require('http');
+const { parse } = require('url');
+const next = require('next');
 const fs = require('fs');
+const path = require('path');
 
-console.log('🚀 Starting Sudan News Today in production mode...\n');
+console.log('🚀 Starting Sudan News Today in production mode (unified Next.js)...\n');
 
-// Check if unified Next.js build exists
 const buildPath = path.join(__dirname, '.next');
 
 if (!fs.existsSync(buildPath)) {
@@ -13,23 +14,24 @@ if (!fs.existsSync(buildPath)) {
   process.exit(1);
 }
 
-console.log('✅ Next.js build files found');
-const port = process.env.PORT || '3000';
-console.log(`🌐 Starting Next.js server on port ${port}\n`);
+const dev = false;
+const app = next({ dev, dir: __dirname });
+const handle = app.getRequestHandler();
 
-// Start the Next.js production server at the root
-const server = spawn('npx', ['next', 'start', '-p', port], {
-  cwd: __dirname,
-  stdio: 'inherit',
-  shell: true,
-});
+const port = process.env.PORT || 3000;
 
-server.on('error', (err) => {
-  console.error('Failed to start server:', err);
-});
-
-process.on('SIGINT', () => {
-  console.log('\n👋 Shutting down server...');
-  server.kill();
-  process.exit(0);
+app.prepare().then(() => {
+  createServer((req, res) => {
+    const parsedUrl = parse(req.url, true);
+    handle(req, res, parsedUrl);
+  }).listen(port, (err) => {
+    if (err) {
+      console.error('❌ Failed to start custom Next.js server:', err);
+      process.exit(1);
+    }
+    console.log(`✅ Next.js server running on port ${port}`);
+  });
+}).catch((err) => {
+  console.error('❌ Error preparing Next.js application:', err);
+  process.exit(1);
 });
