@@ -1,31 +1,61 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { exec } from 'child_process';
 import prisma from '../../lib/prisma';
+import path from 'path';
+
+function runCommand(cmd: string, cwd: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    exec(cmd, { cwd }, (error, stdout, stderr) => {
+      if (error) {
+        reject(`Error: ${error.message}\nStderr: ${stderr}\nStdout: ${stdout}`);
+      } else {
+        resolve(stdout || stderr || 'Success');
+      }
+    });
+  });
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { migrate } = req.query;
+
+  if (migrate === 'true') {
+    try {
+      const projectRoot = process.cwd();
+      
+      // 1. Run Prisma DB Push (creates tables according to schema without lock files)
+      const pushOutput = await runCommand('npx prisma db push --accept-data-loss', projectRoot);
+      
+      // 2. Run Database Seed
+      const seedOutput = await runCommand('node prisma/seed.cjs', projectRoot);
+
+      return res.status(200).json({
+        status: 'success',
+        message: 'Migration and seeding executed successfully!',
+        pushOutput,
+        seedOutput
+      });
+    } catch (err: any) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Migration or seeding failed',
+        error: err.message || String(err)
+      });
+    }
+  }
+
+  // Normal status check
   try {
-    // 1. Check environment variables
-    const envVars = {
-      hasDbUrl: !!process.env.DATABASE_URL,
-      dbUrlLength: process.env.DATABASE_URL ? process.env.DATABASE_URL.length : 0,
-      dbUrlStart: process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 15) + '...' : 'none',
-      nodeEnv: process.env.NODE_ENV
-    };
-
-    // 2. Try to connect/query
     const userCount = await prisma.user.count();
-
     return res.status(200).json({
       status: 'success',
       message: 'Database connection successful!',
-      env: envVars,
       userCount
     });
   } catch (error: any) {
-    return res.status(500).json({
-      status: 'error',
-      message: 'Database connection or query failed',
-      error: error.message || String(error),
-      stack: error.stack
+    return res.status(200).json({
+      status: 'tables_missing',
+      message: 'Database connection works, but tables do not exist. Visit /api/debug-db?migrate=true to create them.',
+      error: error.message || String(error)
     });
   }
 }
