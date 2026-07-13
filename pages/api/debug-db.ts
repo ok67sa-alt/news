@@ -22,8 +22,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const projectRoot = process.cwd();
       
-      // 1. Run Prisma DB Push (creates tables according to schema without lock files)
-      const pushOutput = await runCommand('npx prisma db push --accept-data-loss', projectRoot);
+      // 1. Run Prisma DB Push (using local prisma path since npx isn't in shell PATH)
+      const pushOutput = await runCommand('node ./node_modules/prisma/build/index.js db push --accept-data-loss', projectRoot);
       
       // 2. Run Database Seed
       const seedOutput = await runCommand('node prisma/seed.cjs', projectRoot);
