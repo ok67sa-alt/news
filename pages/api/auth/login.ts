@@ -28,8 +28,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const token = signToken({ id: user.id, email: user.email, role: user.role, name: user.name });
     setTokenCookie(res, token);
     return res.status(200).json({ id: user.id, email: user.email, name: user.name, role: user.role });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Login failed' });
+  } catch (err: any) {
+    console.error("LOGIN ERROR:", err);
+
+    return res.status(500).json({
+      error: err.message,
+      stack: process.env.NODE_ENV !== "production" ? err.stack : undefined
+    });
   }
 }

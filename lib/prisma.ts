@@ -1,12 +1,17 @@
 import { PrismaClient } from '@prisma/client';
 
-// Create a single shared Prisma instance in development to avoid socket exhaustion
-declare global {
-  // eslint-disable-next-line no-var
-  var prisma: PrismaClient | undefined;
-}
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
 
-const client = global.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== 'production') global.prisma = client;
+type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>;
 
-export default client;
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientSingleton | undefined;
+};
+
+const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+
+export default prisma;
+
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
