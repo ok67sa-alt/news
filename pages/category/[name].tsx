@@ -92,8 +92,8 @@ export default function CategoryPage() {
     if (dbCategoryName && allArticles.length > 0) {
       let result = allArticles.filter((a) => {
         const catName = typeof a.category === 'object' && a.category !== null
-          ? a.category.name
-          : a.category;
+          ? (a.category as any).name
+          : String(a.category || '');
         return catName?.toLowerCase() === dbCategoryName.toLowerCase();
       });
 
@@ -262,7 +262,7 @@ export default function CategoryPage() {
               </h3>
               <div className="divide-y divide-brand-border/60">
                 {trendingArticles.map((art) => {
-                  const artCat = typeof art.category === 'object' && art.category !== null ? art.category.name : art.category;
+                  const artCat = typeof art.category === 'object' && art.category !== null ? (art.category as any).name : String(art.category || '');
                   return (
                     <div key={art.id} className="py-3.5 first:pt-0 last:pb-0">
                       <span className="text-[9px] font-ui font-black uppercase text-brand-red tracking-widest block mb-0.5">

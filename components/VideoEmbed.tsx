@@ -20,7 +20,7 @@ export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbe
           <source src={videoSrc} type="video/mp4" />
           <source src={videoSrc} type="video/webm" />
           <source src={videoSrc} type="video/ogg" />
-          متصفحك لا يدعم تشغيل الفيديو
+          Your browser does not support the video tag.
         </video>
       </div>
     );
@@ -93,7 +93,7 @@ export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbe
     return (
       <div className={`bg-gray-100 border border-gray-300 rounded p-4 text-center ${className}`}>
         <p className="text-sm text-gray-600">
-          رابط فيديو غير صالح. يرجى تقديم رابط صالح من YouTube أو Twitter/X.
+          Invalid video link. Please provide a valid link from YouTube or Twitter/X.
         </p>
       </div>
     );
@@ -109,7 +109,7 @@ export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbe
           </svg>
         </div>
         <p className="text-gray-700 mb-3 font-medium">
-          فيديو Facebook - بعض الفيديوهات لا يمكن تضمينها بسبب إعدادات الخصوصية
+          Facebook Video - Some videos cannot be embedded due to privacy settings.
         </p>
         <a 
           href={videoData.embedUrl} 
@@ -117,7 +117,7 @@ export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbe
           rel="noopener noreferrer"
           className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
         >
-          مشاهدة على Facebook
+          Watch on Facebook
         </a>
       </div>
     );

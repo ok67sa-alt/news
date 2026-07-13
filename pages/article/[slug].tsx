@@ -197,7 +197,7 @@ export default function ArticleDetail() {
             {(article.videoUrl || article.videoFile) && (
               <div className="space-y-2">
                 <VideoEmbed url={article.videoUrl} videoFile={article.videoFile} />
-                <p className="text-[11px] text-brand-muted italic font-ui leading-normal text-right">
+                <p className="text-[11px] text-brand-muted italic font-ui leading-normal text-left">
                   Video content related to {article.title.toLowerCase()} / Embedded Media
                 </p>
               </div>
@@ -211,7 +211,7 @@ export default function ArticleDetail() {
                   className="w-full h-full object-cover"
                 />
               </div>
-              <p className="text-[11px] text-brand-muted italic font-ui leading-normal text-right">
+              <p className="text-[11px] text-brand-muted italic font-ui leading-normal text-left">
                 Photo showing aspects of {article.title.toLowerCase()} in Sudan. / Unsplash archive
               </p>
             </div>

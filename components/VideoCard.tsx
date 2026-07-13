@@ -43,8 +43,8 @@ export default function VideoCard({ article }: VideoCardProps) {
         <h3 className="video-card-title">{article.title}</h3>
         <p className="video-card-category">
           {typeof article.category === 'object' && article.category !== null 
-            ? article.category.name 
-            : article.category || 'فيديو'}
+            ? (article.category as any).name 
+            : String(article.category || 'Video')}
         </p>
       </div>
     </Link>

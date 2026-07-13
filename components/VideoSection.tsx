@@ -28,7 +28,7 @@ export default function VideoSection({ videos }: VideoSectionProps) {
     <section className="video-section">
       <div className="video-section-container">
         <div className="video-header">
-          <h2>شاهد</h2>
+          <h2>Watch</h2>
           <ChevronRight size={32} />
         </div>
         
@@ -40,14 +40,14 @@ export default function VideoSection({ videos }: VideoSectionProps) {
                 onClick={scrollLeft}
                 aria-label="Previous videos"
               >
-                <ChevronRight size={24} />
+                <ChevronLeft size={24} />
               </button>
               <button 
                 className="video-nav-button next" 
                 onClick={scrollRight}
                 aria-label="Next videos"
               >
-                <ChevronLeft size={24} />
+                <ChevronRight size={24} />
               </button>
             </>
           )}

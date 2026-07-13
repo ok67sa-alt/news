@@ -27,6 +27,7 @@ export interface Article {
   readTime: string;
   featured: boolean;
   breaking: boolean;
+  hero: boolean;
   views: number;
   image?: string | null; // Made optional for video-only articles
   videoUrl?: string | null; // URL for embedded videos (YouTube, Twitter/X, Facebook)

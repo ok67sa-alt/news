@@ -42,7 +42,7 @@ export default function SearchPage() {
   }, []);
 
   const categoriesList = ['All', ...Array.from(new Set(allArticles.map((a) => {
-    return typeof a.category === 'object' && a.category !== null ? a.category.name : (a.category || '');
+    return typeof a.category === 'object' && a.category !== null ? (a.category as any).name : String(a.category || '');
   })))];
 
   useEffect(() => {
@@ -52,14 +52,14 @@ export default function SearchPage() {
       const q = searchQuery.toLowerCase().trim();
       tempResults = tempResults.filter((article) => {
         const authorName = typeof article.author === 'object' && article.author !== null
-          ? article.author.name
-          : (article.author || '');
+          ? (article.author as any).name
+          : String(article.author || '');
         return (
           article.title.toLowerCase().includes(q) ||
           (typeof article.category === 'object' && article.category !== null
             ? article.category.name.toLowerCase().includes(q)
-            : (article.category || '').toLowerCase().includes(q)) ||
-          authorName.toLowerCase().includes(q) ||
+            : String(article.category || '').toLowerCase().includes(q)) ||
+          String(authorName).toLowerCase().includes(q) ||
           article.content.toLowerCase().includes(q) ||
           article.excerpt.toLowerCase().includes(q)
         );
@@ -69,8 +69,8 @@ export default function SearchPage() {
     if (selectedCategory !== 'All') {
       tempResults = tempResults.filter((article) => {
         const catName = typeof article.category === 'object' && article.category !== null
-          ? article.category.name
-          : article.category;
+          ? (article.category as any).name
+          : String(article.category || '');
         return catName === selectedCategory;
       });
     }
