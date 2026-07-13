@@ -1,34 +1,25 @@
 const { spawn } = require('child_process');
 const path = require('path');
+const fs = require('fs');
 
 console.log('🚀 Starting Sudan News Today in production mode...\n');
 
-// Check if build exists
-const fs = require('fs');
-const distPath = path.join(__dirname, 'dist');
-const backendBuildPath = path.join(__dirname, 'backend', '.next');
+// Check if unified Next.js build exists
+const buildPath = path.join(__dirname, '.next');
 
-if (!fs.existsSync(distPath)) {
-  console.error('❌ Frontend build not found!');
-  console.log('Run: npm run build:frontend\n');
+if (!fs.existsSync(buildPath)) {
+  console.error('❌ Production build not found at .next!');
+  console.log('Please run npm run build first.\n');
   process.exit(1);
 }
 
-if (!fs.existsSync(backendBuildPath)) {
-  console.error('❌ Backend build not found!');
-  console.log('Run: npm run build:backend\n');
-  process.exit(1);
-}
+console.log('✅ Next.js build files found');
+const port = process.env.PORT || '3000';
+console.log(`🌐 Starting Next.js server on port ${port}\n`);
 
-console.log('✅ Build files found');
-console.log('🌐 Starting server on http://localhost:3000\n');
-console.log('   Frontend: http://localhost:3000');
-console.log('   Admin:    http://localhost:3000/admin');
-console.log('   API:      http://localhost:3000/api\n');
-
-// Start the Next.js production server
-const server = spawn('npm', ['start'], {
-  cwd: path.join(__dirname, 'backend'),
+// Start the Next.js production server at the root
+const server = spawn('npx', ['next', 'start', '-p', port], {
+  cwd: __dirname,
   stdio: 'inherit',
   shell: true,
 });
