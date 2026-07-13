@@ -1,0 +1,68 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique @db.VarChar(255)
+  slug      String    @unique @db.VarChar(255)
+  subtitle  String?   @db.Text
+  deskLead  String?   @db.VarChar(255)
+  deskEmail String?   @db.VarChar(255)
+  articles  Article[]
+}
+
+enum Status {
+  DRAFT
+  REVIEW
+  PUBLISHED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique @db.VarChar(255)
+  password  String   @db.VarChar(255)
+  name      String?  @db.VarChar(255)
+  role      String   @default("EDITOR") @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  articles  Article[]
+}
+
+model Article {
+  id          Int       @id @default(autoincrement())
+  title       String    @db.VarChar(500)
+  slug        String    @unique @db.VarChar(500)
+  excerpt     String    @db.Text
+  content     String    @db.LongText
+  readTime    String    @db.VarChar(50)
+  hero        Boolean   @default(false)  // Mark as main hero article
+  featured    Boolean   @default(false)  // Mark as editor's pick
+  breaking    Boolean   @default(false)  // Mark as breaking news
+  views       Int       @default(0)
+  image       String?   @db.VarChar(500) // Made optional for video-only articles
+  videoUrl    String?   @db.VarChar(500) // URL for embedded videos (YouTube, Facebook, Twitter/X, etc.)
+  videoFile   String?   @db.VarChar(500) // Path to uploaded video file
+  categoryId  Int? 
+  category    Category? @relation(fields: [categoryId], references: [id])
+  authorId    Int?
+  author      User?     @relation(fields: [authorId], references: [id])
+  authorRole  String?   @db.VarChar(100)
+  publishedAt DateTime?
+  status      Status    @default(DRAFT)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([categoryId])
+  @@index([authorId])
+  @@index([slug])
+  @@index([status])
+  @@index([hero])
+  @@index([featured])
+  @@index([views])
+}

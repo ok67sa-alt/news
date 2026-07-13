@@ -1,6 +1,6 @@
-const STRAPI_URL = import.meta.env.VITE_STRAPI_API_URL || '';
-const STRAPI_TOKEN = import.meta.env.VITE_STRAPI_API_TOKEN || '';
-const API_URL = import.meta.env.VITE_API_URL || '';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_API_URL || '';
+const STRAPI_TOKEN = process.env.NEXT_PUBLIC_STRAPI_API_TOKEN || '';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 export interface QueryParams {
   [key: string]: any;
