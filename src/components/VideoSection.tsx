@@ -28,7 +28,7 @@ export default function VideoSection({ videos }: VideoSectionProps) {
     <section className="video-section">
       <div className="video-section-container">
         <div className="video-header">
-          <h2>شاهد</h2>
+          <h2>Watch</h2>
           <ChevronRight size={32} />
         </div>
         

@@ -24,7 +24,7 @@ export function getVideoThumbnail(videoUrl: string | null | undefined): string |
       const match = videoUrl.match(pattern);
       if (match) {
         // Use high quality thumbnail
-        return `https://img.youtube.com/vi/${match[1]}/maxresdefault.jpg`;
+        return `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`;
       }
     }
 

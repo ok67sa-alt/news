@@ -8,7 +8,7 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ article }: VideoCardProps) {
-  const thumbnail = getImageUrl(article.image);
+  const thumbnail = getImageUrl(article.image, article.videoUrl, article.videoFile);
   
   // Extract video duration from article if available (you can add this field)
   const duration = article.readTime || '2:47'; // Default placeholder
@@ -44,7 +44,7 @@ export default function VideoCard({ article }: VideoCardProps) {
         <p className="video-card-category">
           {typeof article.category === 'object' && article.category !== null 
             ? article.category.name 
-            : article.category || 'فيديو'}
+            : article.category || 'Video'}
         </p>
       </div>
     </Link>

@@ -4,11 +4,94 @@ interface VideoEmbedProps {
   className?: string;
 }
 
+function isVideoFile(path: string | null | undefined): boolean {
+  if (!path) return false;
+  const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.avi', '.mkv'];
+  return videoExtensions.some(ext => path.toLowerCase().endsWith(ext));
+}
+
 export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbedProps) {
-  // If video file is provided, use HTML5 video player
-  if (videoFile) {
+  
+  // Extract video ID and platform
+  const getEmbedUrl = (videoUrl: string): { embedUrl: string; platform: string } | null => {
+    try {
+      // 1. YouTube
+      if (videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')) {
+        let videoId: string | null = null;
+        try {
+          const urlObj = new URL(videoUrl);
+          if (urlObj.hostname.includes('youtu.be')) {
+            videoId = urlObj.pathname.slice(1);
+          } else if (urlObj.pathname.startsWith('/shorts/')) {
+            videoId = urlObj.pathname.split('/')[2];
+          } else if (urlObj.pathname.startsWith('/embed/')) {
+            videoId = urlObj.pathname.split('/')[2];
+          } else {
+            videoId = urlObj.searchParams.get('v');
+          }
+        } catch {
+          // fallback to regex
+          const match = videoUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/ ]{11})/i);
+          if (match) videoId = match[1];
+        }
+
+        if (videoId && videoId.length === 11) {
+          return {
+            embedUrl: `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`,
+            platform: 'youtube'
+          };
+        }
+      }
+
+      // 2. Facebook
+      if (videoUrl.includes('facebook.com') || videoUrl.includes('fb.watch') || videoUrl.includes('fb.com')) {
+        return {
+          embedUrl: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(videoUrl)}&show_text=0&width=560`,
+          platform: 'facebook'
+        };
+      }
+
+      // 3. Twitter/X
+      const twitterMatch = videoUrl.match(/(?:twitter\.com|x\.com)\/.*\/status\/(\d+)/i);
+      if (twitterMatch) {
+        return {
+          embedUrl: `https://platform.twitter.com/embed/Tweet.html?id=${twitterMatch[1]}&theme=light`,
+          platform: 'twitter'
+        };
+      }
+
+      // 4. Direct video files (if they start with http/https and end with video extension)
+      const isDirectVideo = isVideoFile(videoUrl);
+      if (isDirectVideo) {
+        return {
+          embedUrl: videoUrl,
+          platform: 'direct'
+        };
+      }
+
+      // 5. Existing embeds
+      if (videoUrl.includes('youtube.com/embed/') || videoUrl.includes('facebook.com/plugins/video.php')) {
+        return {
+          embedUrl: videoUrl,
+          platform: videoUrl.includes('youtube') ? 'youtube' : 'facebook'
+        };
+      }
+
+      return null;
+    } catch (error) {
+      console.error('Error parsing video URL:', error);
+      return null;
+    }
+  };
+
+  const videoData = url ? getEmbedUrl(url) : null;
+  
+  // If video file is provided or the URL is a direct video link, use HTML5 video player
+  const directVideoUrl = videoFile || (videoData?.platform === 'direct' ? videoData.embedUrl : null);
+  
+  if (directVideoUrl) {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
-    const videoSrc = videoFile.startsWith('http') ? videoFile : `${API_URL}${videoFile}`;
+    const videoSrc = directVideoUrl.startsWith('http') ? directVideoUrl : `${API_URL}${directVideoUrl}`;
     
     return (
       <div className={`relative w-full ${className}`}>
@@ -28,97 +111,12 @@ export default function VideoEmbed({ url, videoFile, className = '' }: VideoEmbe
 
   if (!url) return null;
 
-  // Extract video ID and platform
-  const getEmbedUrl = (videoUrl: string): { embedUrl: string; platform: string } | null => {
-    try {
-      // YouTube patterns
-      const youtubePatterns = [
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-        /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/
-      ];
-      
-      for (const pattern of youtubePatterns) {
-        const match = videoUrl.match(pattern);
-        if (match) {
-          return {
-            embedUrl: `https://www.youtube.com/embed/${match[1]}?rel=0&modestbranding=1`,
-            platform: 'youtube'
-          };
-        }
-      }
-
-      // Twitter/X video patterns
-      const twitterPatterns = [
-        /twitter\.com\/.*\/status\/(\d+)/,
-        /x\.com\/.*\/status\/(\d+)/
-      ];
-      
-      for (const pattern of twitterPatterns) {
-        const match = videoUrl.match(pattern);
-        if (match) {
-          return {
-            embedUrl: `https://platform.twitter.com/embed/Tweet.html?id=${match[1]}&theme=light`,
-            platform: 'twitter'
-          };
-        }
-      }
-
-      // Facebook video patterns - check if URL contains facebook.com or fb.watch
-      if (videoUrl.includes('facebook.com') || videoUrl.includes('fb.watch') || videoUrl.includes('fb.com')) {
-        // Show a message instead of trying to embed (many FB videos can't be embedded)
-        return {
-          embedUrl: videoUrl, // We'll handle this specially
-          platform: 'facebook-link'
-        };
-      }
-
-      // If URL is already an embed URL, use it directly
-      if (videoUrl.includes('youtube.com/embed/') || videoUrl.includes('facebook.com/plugins/video.php')) {
-        return {
-          embedUrl: videoUrl,
-          platform: videoUrl.includes('youtube') ? 'youtube' : 'facebook'
-        };
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Error parsing video URL:', error);
-      return null;
-    }
-  };
-
-  const videoData = getEmbedUrl(url);
-
   if (!videoData) {
     return (
       <div className={`bg-gray-100 border border-gray-300 rounded p-4 text-center ${className}`}>
         <p className="text-sm text-gray-600">
-          Invalid video link. Please provide a valid link from YouTube or Twitter/X.
+          Invalid video link. Please provide a valid link from YouTube, Facebook, or Twitter/X.
         </p>
-      </div>
-    );
-  }
-
-  // Special handling for Facebook videos (show link instead of embed)
-  if (videoData.platform === 'facebook-link') {
-    return (
-      <div className={`bg-blue-50 border-2 border-blue-300 rounded-lg p-6 text-center ${className}`}>
-        <div className="mb-3">
-          <svg className="w-12 h-12 mx-auto text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-          </svg>
-        </div>
-        <p className="text-gray-700 mb-3 font-medium">
-          Facebook Video - Some videos cannot be embedded due to privacy settings.
-        </p>
-        <a 
-          href={videoData.embedUrl} 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="inline-block px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Watch on Facebook
-        </a>
       </div>
     );
   }
