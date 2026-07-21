@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, Search, Globe, Sun } from 'lucide-react';
 import BreakingTicker from './BreakingTicker';
 import { fetchAPI } from '../utils/api';
@@ -8,7 +7,8 @@ import { fetchAPI } from '../utils/api';
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [formattedDate, setFormattedDate] = useState('');
-  const router = useRouter();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Generate newspaper date header format: "Thursday, June 11, 2026"
@@ -48,7 +48,7 @@ export default function Header() {
   }, []);
 
   const handleSearchClick = () => {
-    router.push('/search');
+    navigate('/search');
   };
 
   return (
@@ -109,9 +109,9 @@ export default function Header() {
             {/* Desktop Categories - Centered */}
             <nav className="hidden lg:flex justify-center items-center space-x-8 text-sm font-ui font-bold tracking-wider uppercase">
               <Link
-                href="/"
+                to="/"
                 className={`${
-                  router.pathname === "/" 
+                  location.pathname === "/" 
                     ? "text-yellow-400 border-b-2 border-yellow-400 pb-2" 
                     : "text-blue-100 hover:text-yellow-400 transition-all duration-200 pb-2 hover:border-b-2 hover:border-yellow-400"
                 }`}
@@ -121,9 +121,9 @@ export default function Header() {
               {categories.slice(0, 6).map((cat) => (
                 <Link
                   key={cat.slug}
-                  href={`/category/${cat.slug}`}
+                  to={`/category/${cat.slug}`}
                   className={`${
-                    router.pathname === `/category/${cat.slug}` 
+                    location.pathname === `/category/${cat.slug}` 
                       ? "text-yellow-400 border-b-2 border-yellow-400 pb-2" 
                       : "text-blue-100 hover:text-yellow-400 transition-all duration-200 pb-2 hover:border-b-2 hover:border-yellow-400"
                   }`}
@@ -177,10 +177,10 @@ export default function Header() {
             {/* Navigation Links */}
             <nav className="flex flex-col p-6 space-y-1 font-ui font-semibold text-base uppercase tracking-wider">
               <Link
-                href="/"
+                to="/"
                 onClick={() => setIsOpen(false)}
                 className={`${
-                  router.pathname === "/" 
+                  location.pathname === "/" 
                     ? "text-blue-900 bg-blue-50 border-l-4 border-blue-900" 
                     : "text-gray-700 hover:text-blue-900 hover:bg-gray-50"
                 } px-4 py-3 rounded-r-lg transition-all duration-200`}
@@ -190,10 +190,10 @@ export default function Header() {
               {categories.map((cat) => (
                 <Link
                   key={cat.slug}
-                  href={`/category/${cat.slug}`}
+                  to={`/category/${cat.slug}`}
                   onClick={() => setIsOpen(false)}
                   className={`${
-                    router.pathname === `/category/${cat.slug}` 
+                    location.pathname === `/category/${cat.slug}` 
                       ? "text-blue-900 bg-blue-50 border-l-4 border-blue-900" 
                       : "text-gray-700 hover:text-blue-900 hover:bg-gray-50"
                   } px-4 py-3 rounded-r-lg transition-all duration-200`}
@@ -202,7 +202,7 @@ export default function Header() {
                 </Link>
               ))}
               <Link
-                href="/search"
+                to="/search"
                 onClick={() => setIsOpen(false)}
                 className="flex items-center space-x-2 text-blue-900 px-4 py-3 mt-4 bg-yellow-400 hover:bg-yellow-500 rounded-lg transition-all duration-200 font-bold"
               >
