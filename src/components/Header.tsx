@@ -185,7 +185,7 @@ export default function Header() {
             <div className="mt-auto pt-6 border-t border-brand-border text-xs text-brand-muted space-y-2">
               <p>Khartoum, Sudan</p>
               <p>{formattedDate}</p>
-              <p className="font-bold">© {new Date().getFullYear()} Sudan Times</p>
+              <p className="font-bold">© {new Date().getFullYear()} Sudan News Today</p>
             </div>
           </div>
         </div>

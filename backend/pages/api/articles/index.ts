@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import prisma from "../../../lib/prisma";
 import { cleanArticles, cleanArticle } from "../../../lib/cleanApiResponse";
+import cache, { CacheKeys, CacheTTL, invalidateArticleCache } from "../../../lib/cache";
 
 const DATA_PATH = path.resolve(process.cwd(), '..', 'src', 'data', 'news.json');
 
@@ -91,27 +92,92 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === "GET") {
     try {
       if (process.env.DATABASE_URL) {
+        // Support pagination via query params
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 20;
+        const skip = (page - 1) * limit;
+
+        // Check if we need category filtering
+        const categorySlug = req.query.category as string;
+        
+        // إنشاء Cache Key فريد بناءً على المعاملات
+        const cacheKey = categorySlug 
+          ? `${CacheKeys.ARTICLES_BY_CATEGORY(0)}:${categorySlug}:page:${page}:limit:${limit}`
+          : `${CacheKeys.ARTICLES_PUBLISHED}:page:${page}:limit:${limit}`;
+        
+        // محاولة جلب البيانات من الـ Cache أولاً
+        const cachedData = cache.get(cacheKey);
+        if (cachedData) {
+          console.log(`✅ Cache HIT: ${cacheKey}`);
+          res.setHeader('X-Cache', 'HIT');
+          res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200');
+          return res.status(200).json(cachedData);
+        }
+        
+        console.log(`❌ Cache MISS: ${cacheKey}`);
+        
+        const whereClause: any = {
+          status: 'PUBLISHED'
+        };
+
+        if (categorySlug) {
+          // Find category by slug first
+          const category = await prisma.category.findUnique({
+            where: { slug: categorySlug }
+          });
+          if (category) {
+            whereClause.categoryId = category.id;
+          }
+        }
+
+        // Fetch articles with pagination
         const articles = await prisma.article.findMany({ 
-          where: {
-            status: 'PUBLISHED' // Only return published articles
-          },
+          where: whereClause,
           orderBy: { publishedAt: "desc" },
+          skip,
+          take: limit,
           include: {
-            category: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+                slug: true
+              }
+            },
             author: {
               select: {
                 id: true,
                 name: true,
-                email: true,
                 role: true
               }
             }
           }
         });
         
+        // Get total count for pagination metadata
+        const total = await prisma.article.count({ where: whereClause });
+        
         // Clean articles to prevent React rendering errors
         const cleanedArticles = cleanArticles(articles);
-        res.status(200).json(cleanedArticles);
+        
+        const responseData = {
+          data: cleanedArticles,
+          pagination: {
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit)
+          }
+        };
+        
+        // حفظ النتيجة في الـ Cache لمدة 10 دقائق
+        cache.set(cacheKey, responseData, CacheTTL.MEDIUM);
+        
+        // Set cache headers (10 minutes for homepage)
+        res.setHeader('X-Cache', 'MISS');
+        res.setHeader('Cache-Control', 'public, s-maxage=600, stale-while-revalidate=1200');
+        
+        res.status(200).json(responseData);
         return;
       }
 
@@ -187,6 +253,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
         });
+        
+        // إزالة الـ Cache بعد إنشاء مقال جديد
+        invalidateArticleCache();
         
         console.log('Article created:', created.id);
         // Clean article to prevent React rendering errors

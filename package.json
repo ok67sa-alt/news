@@ -9,7 +9,11 @@
     "lint": "next lint",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "db:seed": "node prisma/seed.cjs"
+    "db:seed": "node prisma/seed.cjs",
+    "perf:migrate": "node scripts/apply-performance-migration.js",
+    "perf:images": "node scripts/convert-images-to-webp.js",
+    "perf:optimize": "npm run perf:migrate && npm run perf:images",
+    "test:optimizations": "node scripts/test-optimizations.js"
   },
   "prisma": {
     "seed": "node prisma/seed.cjs"
@@ -38,7 +42,8 @@
     "next": "14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-editor-js": "^2.1.0"
+    "react-editor-js": "^2.1.0",
+    "react-router-dom": "^7.18.1"
   },
   "devDependencies": {
     "@types/node": "^22.10.1",

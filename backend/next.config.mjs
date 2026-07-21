@@ -8,6 +8,13 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
+  // تحسينات الأداء والضغط
+  compress: true,
+  swcMinify: true,
+  
+  // ملاحظة: compiler.removeConsole غير مدعوم في Turbopack
+  // سيتم إزالة console.log في Production build تلقائياً
+  
   images: {
     remotePatterns: [
       {
@@ -15,7 +22,10 @@ const nextConfig = {
         hostname: '**',
       }
     ],
-    minimumCacheTTL: 60,
+    formats: ['image/webp', 'image/avif'],
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
   },
   
   // Rewrites for handling uploads and root path

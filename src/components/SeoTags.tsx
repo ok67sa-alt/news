@@ -21,7 +21,7 @@ export default function SeoTags({
 }: SeoProps) {
   useEffect(() => {
     // Standardize title format
-    const formattedTitle = title.includes('Sudan Times') ? title : `${title} | Sudan Times`;
+    const formattedTitle = title.includes('Sudan News Today') ? title : `${title} | Sudan News Today`;
     document.title = formattedTitle;
 
     // Helper to select and update or dynamically append meta tags
@@ -46,7 +46,7 @@ export default function SeoTags({
     updateMetaTag('property', 'og:image', image);
     updateMetaTag('property', 'og:url', url);
     updateMetaTag('property', 'og:type', type);
-    updateMetaTag('property', 'og:site_name', 'Sudan Times');
+    updateMetaTag('property', 'og:site_name', 'Sudan News Today');
 
     // Twitter Card Tags
     updateMetaTag('name', 'twitter:card', 'summary_large_image');

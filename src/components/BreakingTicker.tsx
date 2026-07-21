@@ -33,9 +33,9 @@ export default function BreakingTicker() {
         <span className="animate-pulse mr-1">●</span> BREAKING
       </div>
 
-      {/* Infinite Scrolling Track */}
+      {/* Infinite Scrolling Track - Slower Animation */}
       <div className="relative flex items-center overflow-hidden w-full h-full text-xs font-ui tracking-wide pl-4">
-        <div className="animate-ticker flex items-center space-x-8">
+        <div className="animate-ticker-slow flex items-center space-x-8">
           {doubledArticles.map((article, idx) => (
             <Link
               key={`${article.id}-${idx}`}

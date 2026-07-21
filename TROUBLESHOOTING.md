@@ -1,279 +1,218 @@
-# دليل استكشاف الأخطاء / Troubleshooting Guide
+# 🔧 استكشاف الأخطاء وحلها
 
-## الأخطاء الشائعة وحلولها / Common Errors & Solutions
-
----
-
-## ❌ Error: POST /api/articles [500 Internal Server Error]
+## ❌ المشكلة: API يعطي خطأ 500
 
 ### الأعراض:
-- عند إنشاء مقال جديد، يظهر خطأ 500
-- المقال لا يُحفظ في قاعدة البيانات
+```
+❌ API متاح: Status Code: 500
+{"error":"Failed to load articles"}
+```
 
 ### الأسباب المحتملة:
-1. ✅ **تم الإصلاح:** حقل `videoUrl` لم يكن في `prepareArticleForSubmission`
-2. Prisma Client لم يتم تحديثه بعد تغيير Schema
-3. قاعدة البيانات غير متصلة
 
-### الحل:
+#### 1. مشكلة في Prisma
 ```bash
-# 1. تأكد من تشغيل PostgreSQL
-# تحقق من الخدمة في Task Manager
-
-# 2. تحديث Prisma Client
 cd backend
 npx prisma generate
-
-# 3. مزامنة قاعدة البيانات
 npx prisma db push
+```
 
-# 4. اختبار الاتصال
-node test-db.cjs
+#### 2. مشكلة في قاعدة البيانات
+تحقق من ملف `.env`:
+```env
+DATABASE_URL="mysql://user:password@localhost:3306/database_name"
+```
 
-# 5. إعادة تشغيل Backend
-npm run dev
+تأكد أن:
+- ✅ MySQL يعمل
+- ✅ اسم المستخدم وكلمة المرور صحيحة
+- ✅ قاعدة البيانات موجودة
+
+#### 3. مشكلة في Cache Import
+إذا كان الخطأ يتعلق بـ `cache.ts`:
+
+**الحل المؤقت:**
+```typescript
+// في backend/pages/api/articles/index.ts
+// علّق على imports الـ cache مؤقتاً:
+
+// import cache, { CacheKeys, CacheTTL, invalidateArticleCache } from "../../../lib/cache";
+```
+
+ثم أعد تشغيل السيرفر.
+
+---
+
+## ❌ المشكلة: Cache Headers مفقودة
+
+### الحل:
+تأكد من أن الكود يضيف Headers بشكل صحيح:
+
+```typescript
+res.setHeader('X-Cache', 'HIT');
+res.setHeader('Cache-Control', 'public, s-maxage=600');
 ```
 
 ---
 
-## ❌ Error: Image Upload Failed [400 Bad Request]
+## ❌ المشكلة: البيانات لا تظهر
 
-### الأعراض:
-- عند رفع صورة، يظهر خطأ 400
-- الصورة لا تُرفع
-
-### الأسباب المحتملة:
-1. ✅ **تم الإصلاح:** formidable v3 API changes
-2. مجلد uploads غير موجود
-3. صيغة الملف غير مدعومة
-
-### الحل:
+### التحقق:
 ```bash
-# إنشاء مجلد uploads يدوياً
+# تحقق من وجود بيانات في قاعدة البيانات
 cd backend
-mkdir public\uploads
+npx prisma studio
+```
 
-# الصيغ المدعومة:
-# Images: JPG, PNG, GIF, WebP, SVG
-# Max size: 10MB
+### إضافة بيانات تجريبية:
+```bash
+cd backend
+npm run db:seed
 ```
 
 ---
 
-## ❌ Error: EPERM operation not permitted (Prisma)
+## ✅ خطوات سريعة للإصلاح
 
-### الأعراض:
-```
-EPERM: operation not permitted, unlink 'query_engine-windows.dll.node'
-```
-
-### السبب:
-- خادم Backend يعمل ويمنع تحديث Prisma
-
-### الحل:
+### 1. أعد بناء Prisma:
 ```bash
-# 1. أوقف خادم Backend (Ctrl+C)
-# 2. أغلق جميع نوافذ Terminal
-# 3. انتظر 5 ثواني
-# 4. حاول مرة أخرى:
+cd backend
 npx prisma generate
+npx prisma db push
 ```
 
----
-
-## ❌ Articles Not Appearing on Home Page
-
-### الأعراض:
-- المقال موجود في قاعدة البيانات
-- لا يظهر في الصفحة الرئيسية
-
-### الأسباب:
-1. المقال ليس **منشور** (`status: PUBLISHED`)
-2. المقال ليس **مميز** (`featured: true`)
-3. Frontend لم يتم تحديثه
-
-### الحل:
-```bash
-# من لوحة الإدارة:
-1. افتح المقال للتعديل
-2. ✅ تأكد من "الحالة" = "منشور"
-3. ✅ ضع علامة على "مميز"
-4. احفظ التغييرات
-
-# إذا لم يظهر، حدّث Frontend:
-cd ..
-npm run dev
-```
-
----
-
-## ❌ Video Not Displaying
-
-### الأعراض:
-- أضفت رابط فيديو
-- الفيديو لا يظهر في المقال
-
-### الأسباب:
-1. رابط غير صحيح
-2. الفيديو خاص (Private)
-3. منصة غير مدعومة
-
-### الحل:
-```bash
-# تأكد من:
-✅ الرابط من YouTube أو Facebook
-✅ الفيديو عام (Public)
-✅ الرابط كامل يبدأ بـ https://
-
-# روابط صحيحة:
-https://youtube.com/watch?v=abc123
-https://youtu.be/abc123
-https://facebook.com/user/videos/123456
-
-# روابط خاطئة:
-❌ youtube.com/watch?v=abc123 (بدون https)
-❌ vimeo.com/... (غير مدعوم)
-```
-
----
-
-## ❌ Database Connection Failed
-
-### الأعراض:
-```
-Error: Can't reach database server at localhost:5432
-```
-
-### السبب:
-- PostgreSQL غير مشغل
-
-### الحل:
-```bash
-# Windows:
-1. افتح Services (services.msc)
-2. ابحث عن "PostgreSQL"
-3. اضغط "Start"
-
-# أو من Command Line:
-net start postgresql-x64-15
-```
-
----
-
-## ❌ Port Already in Use
-
-### الأعراض:
-```
-Error: Port 3000 is already in use
-```
-
-### الحل:
-```bash
-# إيقاف العملية على المنفذ 3000
-netstat -ano | findstr :3000
-taskkill /PID [PID_NUMBER] /F
-
-# أو غيّر المنفذ في package.json:
-"dev": "next dev -p 3001"
-```
-
----
-
-## ❌ Color Theme Not Updating
-
-### الأعراض:
-- غيّرت الألوان في الكود
-- الموقع لا يزال يظهر بالألوان القديمة
-
-### الحل:
-```bash
-# 1. امسح cache المتصفح
-Ctrl + Shift + R (Hard Reload)
-
-# 2. أعد تشغيل Frontend
-cd [project-root]
-npm run dev
-
-# 3. امسح dist folder
-rm -rf dist
-npm run dev
-```
-
----
-
-## 🧪 أدوات التشخيص / Diagnostic Tools
-
-### اختبار قاعدة البيانات:
-```bash
-cd backend
-node test-db.cjs
-```
-
-### اختبار الاتصال بـ API:
-```bash
-# GET articles
-curl http://localhost:3000/api/articles
-
-# GET single article
-curl http://localhost:3000/api/articles/1
-```
-
-### فحص Prisma Schema:
+### 2. تحقق من قاعدة البيانات:
 ```bash
 cd backend
 npx prisma studio
-# يفتح واجهة لعرض قاعدة البيانات
+```
+- يجب أن ترى جدول `Article` مع بيانات
+
+### 3. أعد تشغيل السيرفر:
+```bash
+cd backend
+npm run dev
+```
+
+### 4. اختبر API يدوياً:
+افتح في المتصفح:
+```
+http://localhost:3000/api/health
+```
+يجب أن ترى:
+```json
+{
+  "status": "ok",
+  "timestamp": "...",
+  "message": "Backend is running"
+}
+```
+
+ثم:
+```
+http://localhost:3000/api/articles?limit=5
 ```
 
 ---
 
-## 📝 سجلات مفيدة / Useful Logs
+## 🔍 تشخيص متقدم
 
-### Backend Logs:
-- موقع: Terminal حيث يعمل `npm run dev`
-- ابحث عن: `error`, `failed`, `500`
+### تشغيل الاختبار خطوة بخطوة:
 
-### Frontend Logs:
-- موقع: Browser Console (F12)
-- ابحث عن: `Error`, `Failed to fetch`
+#### 1. Health Check:
+```bash
+curl http://localhost:3000/api/health
+```
+**المتوقع:** `{"status":"ok"}`
 
-### Database Logs:
-- موقع: PostgreSQL logs
-- Windows: `C:\Program Files\PostgreSQL\[version]\data\log\`
+#### 2. Articles API:
+```bash
+curl http://localhost:3000/api/articles?limit=1
+```
+**المتوقع:** JSON مع مقال واحد
 
----
-
-## 🆘 الحصول على مساعدة / Getting Help
-
-إذا استمرت المشكلة:
-
-1. **جمع المعلومات:**
-   - نص الخطأ الكامل
-   - خطوات إعادة المشكلة
-   - سجلات Backend/Frontend
-
-2. **فحص الملفات:**
-   - `.env` في backend
-   - `DATABASE_URL` صحيح
-   - PostgreSQL يعمل
-
-3. **إعادة التشغيل الكاملة:**
-   ```bash
-   # أوقف كل شيء
-   Ctrl+C في جميع Terminals
-   
-   # أعد تشغيل PostgreSQL
-   net restart postgresql-x64-15
-   
-   # أعد تشغيل Backend
-   cd backend
-   npm run dev
-   
-   # أعد تشغيل Frontend
-   cd ..
-   npm run dev
-   ```
+#### 3. Cache Headers:
+```bash
+curl -I http://localhost:3000/api/articles
+```
+**المتوقع:** `X-Cache: MISS` أو `X-Cache: HIT`
 
 ---
 
-**آخر تحديث / Last Updated:** 2026-06-16
+## 🐛 أخطاء شائعة
+
+### خطأ: "Cannot find module 'cache'"
+**الحل:**
+```bash
+# تأكد من وجود الملف
+ls backend/lib/cache.ts
+
+# إذا لم يكن موجوداً، الملف موجود في المشروع
+# فقط تأكد من المسار الصحيح
+```
+
+### خطأ: "Prisma Client is not generated"
+**الحل:**
+```bash
+cd backend
+npx prisma generate
+```
+
+### خطأ: "Database does not exist"
+**الحل:**
+```bash
+# أنشئ قاعدة البيانات
+mysql -u root -p
+CREATE DATABASE your_database_name;
+exit;
+
+# ثم
+cd backend
+npx prisma db push
+```
+
+---
+
+## ✅ Checklist التحقق
+
+قبل تشغيل الاختبارات:
+
+- [ ] ✅ MySQL يعمل
+- [ ] ✅ قاعدة البيانات موجودة
+- [ ] ✅ `.env` صحيح
+- [ ] ✅ `npx prisma generate` تم تنفيذه
+- [ ] ✅ `npx prisma db push` تم تنفيذه
+- [ ] ✅ البيانات موجودة (تحقق من Prisma Studio)
+- [ ] ✅ Backend يعمل على port 3000
+- [ ] ✅ لا أخطاء في Console
+
+---
+
+## 🚀 اختبار بسيط
+
+بعد إصلاح المشاكل:
+
+```bash
+# 1. Health Check
+curl http://localhost:3000/api/health
+
+# 2. Articles
+curl http://localhost:3000/api/articles?limit=1
+
+# 3. تشغيل الاختبار
+npm run test:optimizations
+```
+
+---
+
+## 📞 إذا استمرت المشكلة
+
+1. تحقق من Backend Console logs
+2. ابحث عن خطأ مفصل
+3. راجع ملف `backend/pages/api/articles/index.ts`
+4. تأكد من أن جميع imports صحيحة
+
+---
+
+**ملاحظة مهمة:**  
+إذا كان هناك خطأ في `cache.ts` import، يمكنك تعطيل الـ cache مؤقتاً للاختبار، ثم إصلاحه لاحقاً.

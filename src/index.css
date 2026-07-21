@@ -63,7 +63,7 @@
   background: #1E3A8A;
 }
 
-/* Moving ticker animation */
+/* Moving ticker animation - Original (Fast) */
 @keyframes ticker {
   0% {
     transform: translate3d(0, 0, 0);
@@ -80,6 +80,26 @@
 }
 
 .animate-ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Moving ticker animation - Slower Version */
+@keyframes ticker-slow {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.animate-ticker-slow {
+  display: inline-flex;
+  white-space: nowrap;
+  animation: ticker-slow 80s linear infinite; /* ضعف المدة = نصف السرعة */
+}
+
+.animate-ticker-slow:hover {
   animation-play-state: paused;
 }
 

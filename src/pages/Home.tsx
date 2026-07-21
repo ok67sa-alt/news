@@ -17,12 +17,14 @@ export default function Home() {
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
 
   useEffect(() => {
+    // Fetch only 50 articles for homepage (reduced from 100)
     fetchAPI('/articles', {
-      populate: '*',
-      sort: 'publishedAt:desc',
-      'pagination[limit]': 100,
+      page: '1',
+      limit: '50',
     })
-      .then((data) => {
+      .then((response) => {
+        // Handle both paginated and non-paginated responses
+        const data = response?.data || response;
         if (Array.isArray(data) && data.length > 0) setArticles(data);
         else setArticles([]);
       })
@@ -141,7 +143,7 @@ export default function Home() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <SeoTags 
-        title="Sudan Times | Independent Sudanese News & Analysis" 
+        title="Sudan News Today | Independent Sudanese News & Analysis" 
         description="Breaking news, in-depth reports, political analysis, economic briefs, humanitarian updates, culture, and sports coverage from Sudan."
       />
 

@@ -2,6 +2,7 @@
 import fs from "fs";
 import path from "path";
 import prisma from "../../../lib/prisma";
+import cache, { CacheKeys, CacheTTL } from "../../../lib/cache";
 
 const DATA_PATH = path.resolve(process.cwd(), '..', 'src', 'data', 'news.json');
 
@@ -29,7 +30,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     if (process.env.DATABASE_URL) {
+      // محاولة جلب البيانات من الـ Cache أولاً
+      const cachedCategories = cache.get(CacheKeys.CATEGORIES_ALL);
+      if (cachedCategories) {
+        console.log(`✅ Cache HIT: ${CacheKeys.CATEGORIES_ALL}`);
+        res.setHeader('X-Cache', 'HIT');
+        res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600'); // 30 minutes
+        return res.status(200).json(cachedCategories);
+      }
+      
+      console.log(`❌ Cache MISS: ${CacheKeys.CATEGORIES_ALL}`);
+      
       const cats = await prisma.category.findMany();
+      
+      // حفظ النتيجة في الـ Cache لمدة 30 دقيقة (Categories نادراً ما تتغير)
+      cache.set(CacheKeys.CATEGORIES_ALL, cats, CacheTTL.LONG);
+      
+      res.setHeader('X-Cache', 'MISS');
+      res.setHeader('Cache-Control', 'public, s-maxage=1800, stale-while-revalidate=3600');
       res.status(200).json(cats);
       return;
     }

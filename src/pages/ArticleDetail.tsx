@@ -109,7 +109,7 @@ export default function ArticleDetail() {
     setTimeout(() => setCopied(false), 3000);
   };
 
-  const shareText = encodeURIComponent(`${article.title} - Sudan Times`);
+  const shareText = encodeURIComponent(`${article.title} - Sudan News Today`);
   const shareUrl = encodeURIComponent(window.location.href);
 
   // Split content by newline to render separate editorial paragraphs
@@ -335,7 +335,7 @@ export default function ArticleDetail() {
 
           {/* Quick Newsletter panel in sidebar */}
           <div className="border border-brand-border p-5 bg-brand-bgMuted text-center space-y-3">
-            <h4 className="font-headline font-bold text-base text-brand-dark">Sudan Times Weekly</h4>
+            <h4 className="font-headline font-bold text-base text-brand-dark">Sudan News Today Weekly</h4>
             <p className="text-xs text-brand-muted font-ui leading-normal">
               Get an in-depth weekly review of Sudanese politics and trade directly in your inbox.
             </p>

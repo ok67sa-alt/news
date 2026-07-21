@@ -121,7 +121,7 @@ export default function SearchPage() {
       {/* Seo Meta declaration */}
       <SeoTags
         title={`Search Archive: "${searchQuery || 'All Articles'}"`}
-        description="Search through the Sudan Times comprehensive archives for politics, economy, humanitarian developments, technology, and sports."
+        description="Search through the Sudan News Today comprehensive archives for politics, economy, humanitarian developments, technology, and sports."
       />
 
       {/* Title block */}
@@ -256,7 +256,7 @@ export default function SearchPage() {
           <div className="border border-brand-blue/20 p-5 bg-brand-blue/5 space-y-2 text-center">
             <h4 className="font-headline font-bold text-sm text-brand-blue uppercase">Official Press Portal</h4>
             <p className="text-[11px] text-brand-muted leading-relaxed font-ui">
-              Are you a diplomat, researcher, or NGO worker looking for high-resolution datasets? Contact our Sudan Times research department.
+              Are you a diplomat, researcher, or NGO worker looking for high-resolution datasets? Contact our Sudan News Today research department.
             </p>
           </div>
         </div>
