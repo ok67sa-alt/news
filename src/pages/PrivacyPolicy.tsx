@@ -6,8 +6,8 @@ export default function PrivacyPolicy() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <SeoTags 
-        title="Privacy Policy | Sudan News" 
-        description="Learn how Sudan News collects, uses, and protects your personal information. Our commitment to your privacy and data security."
+        title="Privacy Policy | Sudan News Today" 
+        description="Learn how Sudan News Today collects, uses, and protects your personal information. Our commitment to your privacy and data security."
       />
 
       {/* Header */}
@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
       {/* Introduction */}
       <div className="prose prose-sm max-w-none mb-12">
         <p className="text-brand-muted leading-relaxed font-body">
-          At Sudan News, we are committed to protecting your privacy and ensuring the security of your personal information. 
+          At Sudan News Today, we are committed to protecting your privacy and ensuring the security of your personal information. 
           This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website 
           and use our services.
         </p>
@@ -233,8 +233,8 @@ export default function PrivacyPolicy() {
             <p>If you have questions or concerns about this Privacy Policy, please contact us:</p>
             <div className="mt-4 space-y-1">
               <p><strong>Email:</strong> <a href="mailto:privacy@sudannews.com" className="text-brand-red hover:underline">privacy@sudannews.com</a></p>
-              <p><strong>Address:</strong> Sudan News, Khartoum, Sudan</p>
-              <p><strong>Facebook:</strong> <a href="https://www.facebook.com/share/18bTgrtnqB/" target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline">Sudan News Official Page</a></p>
+              <p><strong>Address:</strong> Sudan News Today, Khartoum, Sudan</p>
+              <p><strong>Facebook:</strong> <a href="https://www.facebook.com/share/18bTgrtnqB/" target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline">Sudan News Today Official Page</a></p>
             </div>
           </div>
         </section>

@@ -58,7 +58,7 @@ export default function Footer() {
           {/* Column 1: Brand & About */}
           <div className="space-y-4">
             <h3 className="font-headline font-black text-2xl tracking-tight text-white uppercase">
-              SUDAN NEWS
+              SUDAN NEWS TODAY
             </h3>
             <p className="text-xs leading-relaxed text-gray-200">
               Independent news covering politics, economy, humanitarian affairs, culture, and development in Sudan. Based in Khartoum, reporting to the world.
@@ -156,7 +156,7 @@ export default function Footer() {
         {/* Footer Base Details */}
         <div className="pt-8 flex flex-col sm:flex-row justify-between items-center text-[11px] text-gray-200 tracking-wider">
           <div className="flex flex-wrap justify-center sm:justify-start gap-4 mb-4 sm:mb-0">
-            <span>© {new Date().getFullYear()} Sudan News. All rights reserved.</span>
+            <span>© {new Date().getFullYear()} Sudan News Today. All rights reserved.</span>
             <span>•</span>
             <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
             <span>•</span>

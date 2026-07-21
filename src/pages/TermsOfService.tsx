@@ -6,8 +6,8 @@ export default function TermsOfService() {
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <SeoTags 
-        title="Terms of Service | Sudan News" 
-        description="Terms and conditions for using Sudan News website and services. User responsibilities, content guidelines, and legal agreements."
+        title="Terms of Service | Sudan News Today" 
+        description="Terms and conditions for using Sudan News Today website and services. User responsibilities, content guidelines, and legal agreements."
       />
 
       {/* Header */}
@@ -26,7 +26,7 @@ export default function TermsOfService() {
       {/* Introduction */}
       <div className="prose prose-sm max-w-none mb-12">
         <p className="text-brand-muted leading-relaxed font-body">
-          Welcome to Sudan News. By accessing or using our website, you agree to be bound by these Terms of Service. 
+          Welcome to Sudan News Today. By accessing or using our website, you agree to be bound by these Terms of Service. 
           Please read them carefully before using our services. If you do not agree with any part of these terms, 
           you must not use our website.
         </p>
@@ -46,7 +46,7 @@ export default function TermsOfService() {
           
           <div className="space-y-3 text-sm text-brand-muted font-body leading-relaxed">
             <p>
-              By accessing Sudan News, you confirm that you are at least 13 years old and have the legal capacity 
+              By accessing Sudan News Today, you confirm that you are at least 13 years old and have the legal capacity 
               to enter into these Terms of Service. If you are using our services on behalf of an organization, 
               you represent that you have the authority to bind that organization to these terms.
             </p>
@@ -69,7 +69,7 @@ export default function TermsOfService() {
           <div className="space-y-4 text-sm text-brand-muted font-body leading-relaxed">
             <div>
               <h3 className="font-bold text-brand-dark mb-2">Permitted Use</h3>
-              <p>You may use Sudan News to:</p>
+              <p>You may use Sudan News Today to:</p>
               <ul className="list-disc ml-6 mt-2 space-y-1">
                 <li>Read news articles and reports</li>
                 <li>Subscribe to our newsletter</li>
@@ -87,7 +87,7 @@ export default function TermsOfService() {
                 <li>Use automated systems (bots, scrapers) to access our website excessively</li>
                 <li>Attempt to gain unauthorized access to our systems or user accounts</li>
                 <li>Upload malicious code, viruses, or harmful software</li>
-                <li>Impersonate Sudan News staff or other users</li>
+                <li>Impersonate Sudan News Today staff or other users</li>
                 <li>Use our services for any illegal activities</li>
                 <li>Interfere with the proper functioning of our website</li>
               </ul>
@@ -108,8 +108,8 @@ export default function TermsOfService() {
             <div>
               <h3 className="font-bold text-brand-dark mb-2">Our Content</h3>
               <p>
-                All content on Sudan News, including articles, images, videos, logos, and design, is owned by 
-                Sudan News or our content providers and is protected by international copyright laws.
+                All content on Sudan News Today, including articles, images, videos, logos, and design, is owned by 
+                Sudan News Today or our content providers and is protected by international copyright laws.
               </p>
               <p className="mt-2">
                 You may share and link to our articles with proper attribution. For commercial use, licensing, 
@@ -133,7 +133,7 @@ export default function TermsOfService() {
             <div>
               <h3 className="font-bold text-brand-dark mb-2">User Submissions</h3>
               <p>
-                If you submit content to us (comments, tips, photos), you grant Sudan News a non-exclusive, 
+                If you submit content to us (comments, tips, photos), you grant Sudan News Today a non-exclusive, 
                 royalty-free, worldwide license to use, reproduce, and publish that content.
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function TermsOfService() {
             <div>
               <h3 className="font-bold text-brand-dark mb-2">Accuracy of Information</h3>
               <p>
-                While we strive for accuracy, Sudan News does not guarantee that all information on our website 
+                While we strive for accuracy, Sudan News Today does not guarantee that all information on our website 
                 is complete, accurate, or current. News content is provided "as is" without warranties of any kind.
               </p>
               <p className="mt-2">
@@ -172,7 +172,7 @@ export default function TermsOfService() {
             <div>
               <h3 className="font-bold text-brand-dark mb-2">No Professional Advice</h3>
               <p>
-                Sudan News provides general information and news reporting. Our content should not be considered 
+                Sudan News Today provides general information and news reporting. Our content should not be considered 
                 legal, financial, medical, or professional advice. Consult qualified professionals for specific guidance.
               </p>
             </div>
@@ -190,7 +190,7 @@ export default function TermsOfService() {
           
           <div className="space-y-3 text-sm text-brand-muted font-body leading-relaxed">
             <p>
-              To the fullest extent permitted by law, Sudan News, its staff, contributors, and affiliates shall not be 
+              To the fullest extent permitted by law, Sudan News Today, its staff, contributors, and affiliates shall not be 
               liable for any direct, indirect, incidental, consequential, or punitive damages arising from:
             </p>
             <ul className="list-disc ml-6 space-y-1">
@@ -262,7 +262,7 @@ export default function TermsOfService() {
           
           <div className="space-y-3 text-sm text-brand-muted font-body leading-relaxed">
             <p>
-              We reserve the right to suspend or terminate your access to Sudan News at our sole discretion, 
+              We reserve the right to suspend or terminate your access to Sudan News Today at our sole discretion, 
               without notice, for conduct that we believe:
             </p>
             <ul className="list-disc ml-6 space-y-1">
@@ -311,7 +311,7 @@ export default function TermsOfService() {
             </p>
             <p>
               Material changes will be posted on this page with an updated "Last Updated" date. Your continued 
-              use of Sudan News after changes constitutes acceptance of the revised terms.
+              use of Sudan News Today after changes constitutes acceptance of the revised terms.
             </p>
           </div>
         </section>
@@ -329,8 +329,8 @@ export default function TermsOfService() {
             <p>If you have questions about these Terms of Service, please contact us:</p>
             <div className="mt-4 space-y-1">
               <p><strong>Email:</strong> <a href="mailto:legal@sudannews.com" className="text-brand-red hover:underline">legal@sudannews.com</a></p>
-              <p><strong>Address:</strong> Sudan News, Khartoum, Sudan</p>
-              <p><strong>Facebook:</strong> <a href="https://www.facebook.com/share/18bTgrtnqB/" target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline">Sudan News Official Page</a></p>
+              <p><strong>Address:</strong> Sudan News Today, Khartoum, Sudan</p>
+              <p><strong>Facebook:</strong> <a href="https://www.facebook.com/share/18bTgrtnqB/" target="_blank" rel="noopener noreferrer" className="text-brand-red hover:underline">Sudan News Today Official Page</a></p>
             </div>
           </div>
         </section>

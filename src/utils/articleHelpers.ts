@@ -1,7 +1,7 @@
 /** Safely extract display strings from article relations (Strapi v5, Prisma backend, or JSON fallback). */
 
 export function getAuthorName(article: any): string {
-  if (!article) return 'Sudan News';
+  if (!article) return 'Sudan News Today';
   if (article.authorName) return article.authorName;
   if (typeof article.author === 'string') return article.author;
   if (article.author && typeof article.author === 'object') return article.author.name || 'Sudan News';

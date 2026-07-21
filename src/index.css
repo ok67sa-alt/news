@@ -96,7 +96,7 @@
 .animate-ticker-slow {
   display: inline-flex;
   white-space: nowrap;
-  animation: ticker-slow 80s linear infinite; /* ضعف المدة = نصف السرعة */
+  animation: ticker-slow 120s linear infinite; /* 120 ثانية = بطيء جداً */
 }
 
 .animate-ticker-slow:hover {
