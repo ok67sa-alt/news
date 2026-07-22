@@ -11,7 +11,6 @@ export default function Header() {
   const router = useRouter();
 
   useEffect(() => {
-    // Generate newspaper date header format: "Thursday, June 11, 2026"
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
       year: 'numeric',
@@ -34,7 +33,7 @@ export default function Header() {
         }
       })
       .catch((err) => {
-        console.error('Failed to load categories from Strapi, using fallback:', err);
+        console.error('Failed to load categories, using fallback:', err);
         setCategories([
           { name: 'Politics', slug: 'politics' },
           { name: 'Economy', slug: 'economy' },
@@ -52,65 +51,80 @@ export default function Header() {
   };
 
   return (
-    <header className="w-full bg-blue-900 border-b border-gray-200">
+    <header className="w-full bg-gradient-to-r from-blue-900 via-blue-800 to-blue-900 shadow-lg">
       {/* Top Breaking News Bar */}
       <BreakingTicker />
 
-      {/* Utilities Row: Date, Weather, Global Flag */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 text-xs font-ui tracking-wider text-white flex justify-between items-center border-b border-blue-800">
-        <div className="flex items-center space-x-2">
-          <Globe className="h-3.5 w-3.5 text-white" />
-          <span className="text-white">Khartoum, Sudan</span>
-          <span className="hidden sm:inline text-gray-300">|</span>
-          <span className="hidden sm:inline text-white">{formattedDate}</span>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-1.5 hidden md:flex">
-            <Sun className="h-3.5 w-3.5 text-white" />
-            <span className="text-white">Khartoum 38°C</span>
+      {/* Utilities Row: Date, Weather, Search */}
+      <div className="bg-blue-950 border-b border-blue-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+          <div className="flex justify-between items-center text-xs font-ui">
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-1.5">
+                <Globe className="h-3.5 w-3.5 text-blue-300" />
+                <span className="text-blue-100 font-medium">Khartoum, Sudan</span>
+              </div>
+              <span className="hidden sm:inline text-blue-500">|</span>
+              <span className="hidden sm:inline text-blue-200 font-medium">{formattedDate}</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-1.5">
+                <Sun className="h-3.5 w-3.5 text-yellow-400" />
+                <span className="text-blue-100 font-medium">38°C</span>
+              </div>
+              <span className="hidden md:inline text-blue-500">|</span>
+              <button
+                onClick={handleSearchClick}
+                className="flex items-center space-x-1.5 text-blue-100 hover:text-white transition-all duration-200 px-3 py-1 rounded-md hover:bg-blue-900"
+                aria-label="Search articles"
+              >
+                <Search className="h-3.5 w-3.5" />
+                <span className="font-bold text-xs tracking-wider">SEARCH</span>
+              </button>
+            </div>
           </div>
-          <span className="hidden md:inline text-gray-300">|</span>
-          <button
-            onClick={handleSearchClick}
-            className="flex items-center space-x-1.5 hover:text-brand-red transition-colors duration-200 text-white hover:text-brand-red px-2 py-1"
-            aria-label="Search articles"
-          >
-            <Search className="h-3.5 w-3.5" />
-            <span className="font-semibold text-xs">SEARCH</span>
-          </button>
         </div>
       </div>
 
-      {/* Main Newspaper Title Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 text-center">
-        <Link href="/" className="inline-block">
-          <h1 className="font-headline font-black text-3xl sm:text-5xl md:text-6xl tracking-tight text-white uppercase hover:opacity-80 transition-opacity leading-tight">
-            <span>Sudan News</span>
-            <span className="text-white block text-2xl sm:text-4xl md:text-5xl">Today</span>
-          </h1>
-        </Link>
-        <p className="mt-2 text-xs sm:text-sm font-ui tracking-wide text-white font-semibold">
-          Independent • Truthful • Journalism
-        </p>
+      {/* Main Newspaper Title Banner - Compact One Line */}
+      <div className="border-b border-blue-800 bg-gradient-to-b from-blue-900 to-blue-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-center">
+          <Link href="/" className="inline-block group">
+            <h1 className="font-headline font-black text-3xl sm:text-4xl md:text-5xl tracking-tight text-white uppercase transition-all duration-300 group-hover:scale-105 leading-none">
+              <span className="drop-shadow-2xl">SUDAN NEWS TODAY</span>
+            </h1>
+          </Link>
+          <p className="mt-2 text-xs sm:text-sm font-ui tracking-widest text-blue-100 font-semibold uppercase">
+            Independent • Truthful • Journalism
+          </p>
+        </div>
       </div>
 
-      {/* Desktop Navigation Row */}
-      <div className="border-t border-blue-800 border-b border-blue-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="flex justify-center items-center">
-            {/* Desktop Categories */}
-            <nav className="hidden lg:flex space-x-6 text-sm font-ui font-bold tracking-wider uppercase">
+      {/* Desktop Navigation Row - Perfectly Centered */}
+      <div className="bg-blue-950 border-b border-blue-900 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center py-3">
+            {/* Desktop Categories - Centered with good spacing */}
+            <nav className="hidden lg:flex items-center justify-center space-x-6 text-sm font-ui font-bold tracking-wider uppercase">
               <Link
                 href="/"
-                className={router.pathname === "/" ? "text-brand-red border-b-2 border-brand-red pb-1" : "text-white hover:text-gray-100 transition-colors pb-1"}
+                className={`${
+                  router.pathname === "/" 
+                    ? "text-white bg-blue-800 px-3 py-2 rounded" 
+                    : "text-blue-100 hover:text-white hover:bg-blue-900 transition-all duration-200 px-3 py-2 rounded"
+                }`}
               >
                 Home
               </Link>
-              {categories.map((cat) => (
+              {categories.slice(0, 6).map((cat) => (
                 <Link
                   key={cat.slug}
                   href={`/category/${cat.slug}`}
-                  className={router.pathname === `/category/${cat.slug}` ? "text-brand-red border-b-2 border-brand-red pb-1" : "text-white hover:text-gray-100 transition-colors pb-1"}
+                  className={`${
+                    router.pathname === `/category/${cat.slug}` 
+                      ? "text-white bg-blue-800 px-3 py-2 rounded" 
+                      : "text-blue-100 hover:text-white hover:bg-blue-900 transition-all duration-200 px-3 py-2 rounded"
+                  }`}
                 >
                   {cat.name}
                 </Link>
@@ -118,47 +132,55 @@ export default function Header() {
             </nav>
 
             {/* Mobile / Tablet Menu Button */}
-            <div className="mobile-nav-toggle-wrapper justify-between w-full items-center">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-white hover:text-brand-red hover:bg-blue-800 focus:outline-none ml-auto"
-                aria-expanded={isOpen}
-              >
-                {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-              </button>
-            </div>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden inline-flex items-center justify-center p-2.5 rounded-lg text-blue-100 hover:text-white hover:bg-blue-900 focus:outline-none transition-all duration-200"
+              aria-expanded={isOpen}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer (Animated overlay / drawer) */}
+      {/* Mobile Drawer */}
       {isOpen && (
         <div className="lg:hidden fixed inset-0 z-50 flex">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-black bg-opacity-40 transition-opacity"
+            className="fixed inset-0 bg-black bg-opacity-60 transition-opacity backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           ></div>
 
           {/* Menu Drawer Content */}
-          <div className="relative flex flex-col w-full max-w-xs bg-white h-full shadow-2xl p-6 border-r border-gray-200">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-200 mb-6">
-              <h2 className="font-headline font-bold text-xl text-brand-dark uppercase tracking-tight">
-                Sudan News
-              </h2>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 rounded-md text-brand-dark hover:text-brand-red hover:bg-gray-100"
-              >
-                <X className="h-6 w-6" />
-              </button>
+          <div className="relative flex flex-col w-full max-w-xs bg-white h-full shadow-2xl overflow-y-auto">
+            {/* Drawer Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-blue-900 to-blue-800 p-6 border-b border-blue-700">
+              <div className="flex items-center justify-between">
+                <h2 className="font-headline font-black text-2xl text-white uppercase tracking-tight">
+                  Sudan News Today
+                </h2>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-2 rounded-lg text-white hover:text-yellow-400 hover:bg-blue-800 transition-all duration-200"
+                  aria-label="Close menu"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
             </div>
 
-            <nav className="flex flex-col space-y-3 font-ui font-semibold text-sm uppercase tracking-wider">
+            {/* Navigation Links */}
+            <nav className="flex flex-col p-6 space-y-1 font-ui font-semibold text-base uppercase tracking-wider">
               <Link
                 href="/"
                 onClick={() => setIsOpen(false)}
-                className="text-brand-dark hover:text-brand-red border-b border-gray-100 pb-3 transition-colors"
+                className={`${
+                  router.pathname === "/" 
+                    ? "text-blue-900 bg-blue-50 border-l-4 border-blue-900" 
+                    : "text-gray-700 hover:text-blue-900 hover:bg-gray-50"
+                } px-4 py-3 rounded-r-lg transition-all duration-200`}
               >
                 Home
               </Link>
@@ -167,7 +189,11 @@ export default function Header() {
                   key={cat.slug}
                   href={`/category/${cat.slug}`}
                   onClick={() => setIsOpen(false)}
-                  className="text-brand-dark hover:text-brand-red border-b border-gray-100 pb-3 transition-colors"
+                  className={`${
+                    router.pathname === `/category/${cat.slug}` 
+                      ? "text-blue-900 bg-blue-50 border-l-4 border-blue-900" 
+                      : "text-gray-700 hover:text-blue-900 hover:bg-gray-50"
+                  } px-4 py-3 rounded-r-lg transition-all duration-200`}
                 >
                   {cat.name}
                 </Link>
@@ -175,17 +201,18 @@ export default function Header() {
               <Link
                 href="/search"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center space-x-2 text-brand-blue pt-2 hover:text-brand-red transition-colors"
+                className="flex items-center space-x-2 text-blue-900 px-4 py-3 mt-4 bg-yellow-400 hover:bg-yellow-500 rounded-lg transition-all duration-200 font-bold"
               >
-                <Search className="h-4 w-4" />
+                <Search className="h-5 w-5" />
                 <span>Search Articles</span>
               </Link>
             </nav>
 
-            <div className="mt-auto pt-6 border-t border-brand-border text-xs text-brand-muted space-y-2">
-              <p>Khartoum, Sudan</p>
-              <p>{formattedDate}</p>
-              <p className="font-bold">© {new Date().getFullYear()} Sudan Times</p>
+            {/* Footer Info */}
+            <div className="mt-auto p-6 border-t border-gray-200 bg-gray-50 text-xs text-gray-600 space-y-2">
+              <p className="font-semibold text-gray-800">Khartoum, Sudan</p>
+              <p className="text-gray-600">{formattedDate}</p>
+              <p className="font-bold text-gray-800">© {new Date().getFullYear()} Sudan News Today</p>
             </div>
           </div>
         </div>
