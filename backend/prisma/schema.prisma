@@ -65,4 +65,7 @@ model Article {
   @@index([hero])
   @@index([featured])
   @@index([views])
+  @@index([publishedAt])
+  @@index([status, publishedAt])
+  @@index([categoryId, status, publishedAt])
 }

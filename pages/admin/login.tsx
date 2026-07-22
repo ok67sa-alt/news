@@ -44,7 +44,7 @@ export default function Login() {
           <div style={{display:'flex',justifyContent:'center',alignItems:'center',marginTop:6}}>
             <button className="btn-primary" style={{width:'100%'}}>دخول</button>
           </div>
-          <div className="muted" style={{textAlign:'center',marginTop:8}}>الافتراضي: admin@local / changeme</div>
+          <div className="muted" style={{textAlign:'center',marginTop:8}}></div>
         </form>
       </div>
     </div>
