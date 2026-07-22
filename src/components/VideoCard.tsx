@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { Play, Clock } from 'lucide-react';
 import { getImageUrl } from '../utils/imageResolver';
 import { StrapiArticle } from '../types/api';
@@ -15,7 +15,7 @@ export default function VideoCard({ article }: VideoCardProps) {
 
   return (
     <Link 
-      href={`/article/${article.slug}`} 
+      to={`/article/${article.slug}`} 
       className="video-card"
     >
       <div className="video-thumbnail-wrapper">

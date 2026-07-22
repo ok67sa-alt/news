@@ -89,14 +89,13 @@ export default function Header() {
 
       {/* Main Newspaper Title Banner */}
       <div className="border-b border-blue-800 bg-gradient-to-b from-blue-900 to-blue-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 text-center">
-          <Link href="/" className="inline-block group">
-            <h1 className="font-headline font-black text-5xl sm:text-6xl md:text-7xl tracking-tight text-white uppercase transition-all duration-300 group-hover:scale-105 leading-none">
-              <span className="block drop-shadow-2xl">Sudan News</span>
-              <span className="block text-yellow-400 text-4xl sm:text-5xl md:text-6xl mt-1 drop-shadow-2xl">Today</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5 text-center">
+          <Link to="/" className="inline-block group">
+            <h1 className="font-headline font-black text-3xl sm:text-4xl md:text-5xl tracking-tight text-white uppercase transition-all duration-300 group-hover:scale-105 leading-none">
+              <span className="drop-shadow-2xl">SUDAN NEWS TODAY</span>
             </h1>
           </Link>
-          <p className="mt-3 text-sm sm:text-base font-ui tracking-widest text-blue-100 font-semibold uppercase">
+          <p className="mt-2 text-xs sm:text-sm font-ui tracking-widest text-blue-100 font-semibold uppercase">
             Independent • Truthful • Journalism
           </p>
         </div>
@@ -104,43 +103,45 @@ export default function Header() {
 
       {/* Desktop Navigation Row - Centered */}
       <div className="bg-blue-950 border-b border-blue-900 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-center py-3">
-          {/* Desktop Categories - Centered */}
-          <nav className="hidden lg:flex items-center space-x-8 text-sm font-ui font-bold tracking-wider uppercase">
-            <Link
-              to="/"
-              className={`${
-                location.pathname === "/" 
-                  ? "text-yellow-400 border-b-2 border-yellow-400 pb-2" 
-                  : "text-blue-100 hover:text-yellow-400 transition-all duration-200 pb-2 hover:border-b-2 hover:border-yellow-400"
-              }`}
-            >
-              Home
-            </Link>
-            {categories.slice(0, 6).map((cat) => (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-center items-center py-3">
+            {/* Desktop Categories - Centered with good spacing */}
+            <nav className="hidden lg:flex items-center justify-center space-x-6 text-sm font-ui font-bold tracking-wider uppercase">
               <Link
-                key={cat.slug}
-                to={`/category/${cat.slug}`}
+                to="/"
                 className={`${
-                  location.pathname === `/category/${cat.slug}` 
-                    ? "text-yellow-400 border-b-2 border-yellow-400 pb-2" 
-                    : "text-blue-100 hover:text-yellow-400 transition-all duration-200 pb-2 hover:border-b-2 hover:border-yellow-400"
+                  location.pathname === "/" 
+                    ? "text-white bg-blue-800 px-3 py-2 rounded" 
+                    : "text-blue-100 hover:text-white hover:bg-blue-900 transition-all duration-200 px-3 py-2 rounded"
                 }`}
               >
-                {cat.name}
+                Home
               </Link>
-            ))}
-          </nav>
+              {categories.slice(0, 6).map((cat) => (
+                <Link
+                  key={cat.slug}
+                  to={`/category/${cat.slug}`}
+                  className={`${
+                    location.pathname === `/category/${cat.slug}` 
+                      ? "text-white bg-blue-800 px-3 py-2 rounded" 
+                      : "text-blue-100 hover:text-white hover:bg-blue-900 transition-all duration-200 px-3 py-2 rounded"
+                  }`}
+                >
+                  {cat.name}
+                </Link>
+              ))}
+            </nav>
 
-          {/* Mobile / Tablet Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden inline-flex items-center justify-center p-2.5 rounded-lg text-blue-100 hover:text-yellow-400 hover:bg-blue-900 focus:outline-none transition-all duration-200"
-            aria-expanded={isOpen}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+            {/* Mobile / Tablet Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden inline-flex items-center justify-center p-2.5 rounded-lg text-blue-100 hover:text-yellow-400 hover:bg-blue-900 focus:outline-none transition-all duration-200"
+              aria-expanded={isOpen}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
         </div>
       </div>
 

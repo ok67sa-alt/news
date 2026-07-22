@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye } from 'lucide-react';
 import { getImageUrl, isVideoFile, hasMediaImage } from '../utils/imageResolver';
@@ -53,7 +53,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
           {categoryName}
         </span>
         <Link 
-          href={`/article/${article.slug}`} 
+          to={`/article/${article.slug}`} 
           className="group block"
         >
           <h4 className="font-headline font-bold text-sm sm:text-base text-brand-dark group-hover:text-brand-red transition-colors leading-snug">
@@ -115,7 +115,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
         className="flex flex-col sm:flex-row gap-4 py-4 border-b border-gray-200 last:border-b-0 items-start"
       >
         <Link 
-          href={`/article/${article.slug}`} 
+          to={`/article/${article.slug}`} 
           className="w-full sm:w-1/3 md:w-1/4 aspect-video overflow-hidden bg-black block shrink-0 relative group"
         >
           {hasVideoOnly && isUploadedVideo ? (
@@ -181,7 +181,7 @@ export default function ArticleCard({ article, layout = 'vertical' }: ArticleCar
       className="flex flex-col h-full bg-white shadow-sm hover:shadow-md transition-all duration-200"
     >
       <Link 
-        href={`/article/${article.slug}`} 
+        to={`/article/${article.slug}`} 
         className="w-full aspect-video overflow-hidden bg-black block relative group"
       >
         {hasVideoOnly && isUploadedVideo ? (
