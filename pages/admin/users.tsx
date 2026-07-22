@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import AdminLayout from '../../components_backend/AdminLayout';
+import AdminLayout from '../../backend/components/AdminLayout';
 import { withAuth } from '../../lib/withAuth';
 
 function UsersPage({ user }: { user: any }) {

@@ -2,10 +2,10 @@ import { useRouter } from 'next/router';
 import { useEffect, useState, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { cleanArticle, prepareArticleForSubmission } from '../../../../lib/cleanApiResponse';
-import AdminLayout from '../../../../components_backend/AdminLayout';
+import AdminLayout from '../../../../backend/components/AdminLayout';
 import { withAuth } from '../../../../lib/withAuth';
 
-const EditorJSComponent = dynamic(() => import('../../../../components_backend/EditorJSComponent'), { ssr: false });
+const EditorJSComponent = dynamic(() => import('../../../../backend/components/EditorJSComponent'), { ssr: false });
 
 function EditArticle({ user }: { user: any }) {
   const router = useRouter();

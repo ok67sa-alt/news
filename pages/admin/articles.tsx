@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { cleanArticles } from '../../lib/cleanApiResponse';
-import AdminLayout from '../../components_backend/AdminLayout';
+import AdminLayout from '../../backend/components/AdminLayout';
 import { withAuth } from '../../lib/withAuth';
 
 function ArticlesPage({ user }: { user: any }) {

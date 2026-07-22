@@ -1,13 +1,13 @@
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { prepareArticleForSubmission } from '../../../lib/cleanApiResponse';
-import AdminLayout from '../../../components_backend/AdminLayout';
+import AdminLayout from '../../../backend/components/AdminLayout';
 
 // Editor.js imports
 import dynamic from 'next/dynamic';
 
 // Dynamic import to avoid SSR issues
-const EditorJSComponent = dynamic(() => import('../../../components_backend/EditorJSComponent'), { ssr: false });
+const EditorJSComponent = dynamic(() => import('../../../backend/components/EditorJSComponent'), { ssr: false });
 import { withAuth } from '../../../lib/withAuth';
 
 function NewArticle({ user }: { user: any }) {
