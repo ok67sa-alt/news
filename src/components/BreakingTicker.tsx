@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 import { fetchAPI } from '../utils/api';
 import { StrapiArticle } from '../types/api';
 
@@ -39,7 +39,7 @@ export default function BreakingTicker() {
           {doubledArticles.map((article, idx) => (
             <Link
               key={`${article.id}-${idx}`}
-              href={`/article/${article.slug}`}
+              to={`/article/${article.slug}`}
               className="hover:underline transition-colors flex items-center space-x-1 shrink-0 font-semibold text-brand-red hover:text-brand-dark"
             >
               <span className="font-black">›</span>
