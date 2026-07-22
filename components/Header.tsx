@@ -10,6 +10,11 @@ export default function Header() {
   const [formattedDate, setFormattedDate] = useState('');
   const router = useRouter();
 
+  // VERSION MARKER - Check browser console to verify this loads
+  useEffect(() => {
+    console.log('✅ Header loaded from: /components/Header.tsx (ROOT - NEW VERSION)');
+  }, []);
+
   useEffect(() => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
